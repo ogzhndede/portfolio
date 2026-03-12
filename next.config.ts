@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     images: {
         unoptimized: true, // Statik export için şart
     },
-    // basePath: "/portfolio",
+    basePath: "/portfolio",
 };
 
 export default nextConfig;
