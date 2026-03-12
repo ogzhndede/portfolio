@@ -7,7 +7,7 @@ import { PROJECTS } from "@/data/projects";
 export default function ProjectsPage() {
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex">
-            <Sidebar title="Oğuz Han Dede" imageSrc="/ben.png" />
+            <Sidebar title="Oğuz Han Dede" imageSrc="/portfolio/ben.png" />
 
             <div className="flex-1 md:ml-80">
                 {/* max-w-5xl yerine max-w-6xl yapıldı, works/page.tsx ile aynı hizada olması için */}
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
                                 {/* Logo / Thumbnail */}
                                 <div className="relative w-full aspect-video overflow-hidden bg-white/5">
                                     <Image
-                                        src={project.logo}
+                                        src={`/portfolio/${project.logo}`}
                                         alt={`${project.title} logo`}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-105"

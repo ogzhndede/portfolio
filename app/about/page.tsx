@@ -40,7 +40,7 @@ export default function AboutPage() {
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white flex">
-            <Sidebar title="Oğuz Han Dede" imageSrc="/ben.png" />
+            <Sidebar title="Oğuz Han Dede" imageSrc="/portfolio/ben.png" />
 
             <div className="flex-1 md:ml-80 flex flex-col justify-center items-center p-4">
 
@@ -48,7 +48,7 @@ export default function AboutPage() {
 
                     <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-3xl border-2 border-white/20 bg-gradient-to-br from-white/10 to-black/40 shadow-2xl shadow-white/5 md:h-48 md:w-48">
                         <Image
-                            src="/ben.png"
+                            src="/portfolio/ben.png"
                             alt="Oğuz Han Dede"
                             fill
                             className="object-cover transition duration-500 hover:scale-110"

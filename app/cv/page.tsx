@@ -28,7 +28,7 @@ export default function CvPage() {
     setIsClient(true);
   }, []);
 
-  const pdfUrl = "/cv/CV.pdf";
+  const pdfUrl = "/portfolio/cv/CV.pdf";
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
@@ -49,7 +49,7 @@ export default function CvPage() {
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex">
-      <Sidebar title="Oğuz Han Dede" imageSrc="/ben.png" />
+      <Sidebar title="Oğuz Han Dede" imageSrc="/portfolio/ben.png" />
 
       <div className="flex-1 md:ml-80">
         <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">

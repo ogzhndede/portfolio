@@ -60,7 +60,7 @@ export default function WorksPage() {
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex">
-      <Sidebar title="Oğuz Han Dede" imageSrc="/ben.png" />
+      <Sidebar title="Oğuz Han Dede" imageSrc="/portfolio/ben.png" />
 
       <div className="flex-1 md:ml-80">
         <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
@@ -98,7 +98,7 @@ export default function WorksPage() {
                       >
                         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-inner">
                           <Image
-                            src={g.logo}
+                            src={`/portfolio/${g.logo}`}
                             alt={`${g.title} logo`}
                             fill
                             className={`object-cover transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
@@ -161,7 +161,7 @@ export default function WorksPage() {
                       <div className="flex items-center gap-4">
                         <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/20">
                           <Image
-                            src={activeGame.logo}
+                            src={`/portfolio/${activeGame.logo}`}
                             alt={`${activeGame.title} logo`}
                             fill
                             className="object-cover"
