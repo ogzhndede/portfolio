@@ -8,7 +8,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 // Worker ayarını sadece client-side'da yap
 if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min`;
 }
 
 export default function PdfViewer({ url, scale, pageNumber, onDocumentLoadSuccess }: any) {
