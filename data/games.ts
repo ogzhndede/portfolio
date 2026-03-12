@@ -20,7 +20,7 @@ export const GAMES: GameItem[] = [
   {
     id: "raidrush",
     title: "RaidRush",
-    logo: "/logos/g1.png",
+    logo: "/portfolio/logos/g1.png",
     desc: "Fast-paced raid action game",
     playables: [
       { id: "raidrush-v1", label: "RaidRush 1", url: "/playables/g1/index.html", aspect: "9:20" },
@@ -29,11 +29,11 @@ export const GAMES: GameItem[] = [
   {
     id: "arcane-arena",
     title: "Arcane Arena",
-    logo: "/logos/g2.png",
+    logo: "/portfolio/logos/g2.png",
     desc: "Strategic arena battle experience",
     playables: [
-      { id: "arcane-v1", label: "Arcane Arena 1", url: "/playables/g2/index.html", aspect: "4:3" },
-      { id: "arcane-v2", label: "Arcane Arena 2", url: "/playables/g3/index.html", aspect: "9:16" },
+      { id: "arcane-v1", label: "Arcane Arena 1", url: "/portfolio/playables/g2/index.html", aspect: "4:3" },
+      { id: "arcane-v2", label: "Arcane Arena 2", url: "/portfolio/playables/g3/index.html", aspect: "9:16" },
     ],
   },
 ];
