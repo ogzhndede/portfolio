@@ -98,7 +98,7 @@ export default function WorksPage() {
                       >
                         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-inner">
                           <Image
-                            src={`/portfolio/${g.logo}`}
+                            src={g.logo}
                             alt={`${g.title} logo`}
                             fill
                             className={`object-cover transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
