@@ -66,7 +66,7 @@ export default function PhonePlayable({
               {logo && (
                 <div className="relative mb-4 md:mb-6 h-16 w-16 md:h-20 md:w-20 overflow-hidden rounded-xl md:rounded-2xl border border-white/10 shadow-2xl">
                   <Image
-                    src={logo}
+                    src={`/portfolio/${logo}`}
                     alt={title}
                     fill
                     className="object-cover scale-110"
@@ -94,7 +94,7 @@ export default function PhonePlayable({
             <>
               <iframe
                 className="absolute inset-0 h-full w-full border-0"
-                src={url}
+                src={`/portfolio/${url}`}
                 title={title}
                 allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
                 sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
