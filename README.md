@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+Personal portfolio for a Game / Playable Ads Developer, built as a static Next.js site for GitHub Pages.
 
-First, run the development server:
+Target deployment URL:
+
+```text
+https://username.github.io/portfolio/
+```
+
+## Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- Static export through `next build`
+
+## Local Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Static Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create the static GitHub Pages export:
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Expected output folder:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+out/
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deploy the contents of `out/` to GitHub Pages for the `portfolio` repository.
 
-## Deploy on Vercel
+## GitHub Pages Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project is configured for:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+basePath: /portfolio
+output: export
+trailingSlash: true
+images.unoptimized: true
+```
+
+Internal public assets are stored without the `/portfolio` prefix in data files and resolved at runtime with `publicAssetPath`.
+
+Examples:
+
+```text
+/images/profile/ben.png -> /portfolio/images/profile/ben.png
+/images/projects/ben.png -> /portfolio/images/projects/ben.png
+/images/playables/g1.png -> /portfolio/images/playables/g1.png
+/files/Oguz_Han_Dede_Resume.pdf -> /portfolio/files/Oguz_Han_Dede_Resume.pdf
+```

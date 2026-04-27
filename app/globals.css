@@ -35,3 +35,24 @@ body {
   min-height: 100vh;
   margin: 0;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.react-pdf__Document,
+.react-pdf__Page {
+  max-width: 100%;
+}
+
+.react-pdf__Page canvas,
+.react-pdf__Page svg {
+  max-width: 100%;
+  height: auto !important;
+}

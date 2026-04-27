@@ -1,28 +1,44 @@
 "use client";
+
 import { Document, Page, pdfjs } from "react-pdf";
-import { useState } from "react";
-// @ts-ignore
 import "react-pdf/dist/Page/AnnotationLayer.css";
-// @ts-ignore
 import "react-pdf/dist/Page/TextLayer.css";
 
-// Worker ayarını sadece client-side'da yap
-if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min`;
-}
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
-export default function PdfViewer({ url, scale, pageNumber, onDocumentLoadSuccess }: any) {
+type PdfViewerProps = {
+  url: string;
+  scale: number;
+  pageNumber: number;
+  onDocumentLoadSuccess: ({ numPages }: { numPages: number }) => void;
+  onLoadError: () => void;
+  loadingComponent?: React.ReactNode;
+};
+
+export default function PdfViewer({
+  url,
+  scale,
+  pageNumber,
+  onDocumentLoadSuccess,
+  onLoadError,
+  loadingComponent,
+}: PdfViewerProps) {
   return (
     <Document
       file={url}
       onLoadSuccess={onDocumentLoadSuccess}
-      loading={<div className="text-white">Loading PDF...</div>}
+      onLoadError={onLoadError}
+      loading={loadingComponent ?? <div className="text-white">Loading PDF...</div>}
+      error={<div className="text-white/70">Failed to load PDF file.</div>}
     >
       <Page
         pageNumber={pageNumber}
         scale={scale}
-        renderTextLayer={true}
-        renderAnnotationLayer={true}
+        renderTextLayer
+        renderAnnotationLayer
       />
     </Document>
   );

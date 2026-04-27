@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { publicAssetPath } from "@/lib/paths";
 
 function parseAspect(aspect: string): { w: number; h: number } {
   const [w, h] = aspect.split(":").map(Number);
@@ -66,7 +67,7 @@ export default function PhonePlayable({
               {logo && (
                 <div className="relative mb-4 md:mb-6 h-16 w-16 md:h-20 md:w-20 overflow-hidden rounded-xl md:rounded-2xl border border-white/10 shadow-2xl">
                   <Image
-                    src={logo}
+                    src={publicAssetPath(logo)}
                     alt={title}
                     fill
                     className="object-cover scale-110"
@@ -83,18 +84,18 @@ export default function PhonePlayable({
                 onClick={() => setIsPlaying(true)}
                 className="group relative flex items-center justify-center overflow-hidden rounded-full bg-white px-6 md:px-8 py-2.5 md:py-3.5 font-black uppercase tracking-widest text-black text-xs md:text-sm transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)]"
               >
-                <span className="relative z-10">Oyunu Başlat</span>
+                <span className="relative z-10">Start Playable</span>
               </button>
 
               <p className="mt-3 md:mt-4 text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-white/20">
-                Ekran Oranı: {aspect}
+                Aspect Ratio: {aspect}
               </p>
             </div>
           ) : (
             <>
               <iframe
                 className="absolute inset-0 h-full w-full border-0"
-                src={url}
+                src={publicAssetPath(url)}
                 title={title}
                 allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
                 sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
@@ -102,7 +103,7 @@ export default function PhonePlayable({
               <button
                 onClick={handleFullscreen}
                 className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-20 rounded-lg md:rounded-xl bg-black/60 p-1.5 md:p-2.5 text-white backdrop-blur-md border border-white/10 hover:bg-black/80 transition-all duration-300 opacity-70 hover:opacity-100"
-                title="Tam Ekran"
+                title="Fullscreen"
               >
                 <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />

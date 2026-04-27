@@ -3,72 +3,342 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Sidebar from "@/components/Sidebar";
-import PhonePlayable from "@/components/PhonePlayable";
-import { GAMES, type GameItem, type PlayableItem } from "@/data/games";
+import { playableGames, type PlayableGame, type PlayableItem } from "@/data/playables";
+import { publicAssetPath } from "@/lib/paths";
 
-const DEVICE_OPTIONS = [
-  { label: "Phone (9:16)", value: "9:16" },
-  { label: "Tall Phone (9:20)", value: "9:20" },
-  { label: "Phone Landscape (16:9)", value: "16:9" },
-  { label: "Tall Phone Landscape (20:9)", value: "20:9" },
-  { label: "Tablet Portrait (3:4)", value: "3:4" },
-  { label: "Tablet Landscape (4:3)", value: "4:3" },
-];
+type SelectedPlayableState = {
+  gameId: string;
+  playableId: string;
+};
 
-export default function WorksPage() {
-  const [activeGameId, setActiveGameId] = useState<string>(GAMES[0]?.id ?? "");
-  const [expandedGameId, setExpandedGameId] = useState<string>(GAMES[0]?.id ?? "");
-  const [activePlayableId, setActivePlayableId] = useState<string>(
-    GAMES[0]?.playables[0]?.id ?? ""
+type BaseRatio = "9:20" | "16:9" | "4:3";
+type Orientation = "Portrait" | "Landscape";
+
+const RATIO_OPTIONS: BaseRatio[] = ["9:20", "16:9", "4:3"];
+
+function getFrameAspect(baseRatio: BaseRatio, orientation: Orientation) {
+  const [first, second] = baseRatio.split(":").map(Number);
+  const wide = Math.max(first, second);
+  const tall = Math.min(first, second);
+
+  return orientation === "Landscape" ? `${wide}/${tall}` : `${tall}/${wide}`;
+}
+
+function PlayableStatusOverlay({ hasError }: { hasError: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/70 px-4 text-center text-xs font-bold uppercase tracking-[0.2em] text-white/60 backdrop-blur-sm">
+      {!hasError && (
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-[#8b8aef]" />
+      )}
+      <span>{hasError ? "Failed to load playable." : "Loading playable..."}</span>
+    </div>
   );
+}
 
-  const [selectedAspect, setSelectedAspect] = useState<string>(
-    GAMES[0]?.playables[0]?.aspect ?? "9:16"
-  );
+function PlayableTestFrame({
+  game,
+  playable,
+  baseRatio,
+  orientation,
+  setBaseRatio,
+  setOrientation,
+  onOpenFullscreen,
+}: {
+  game: PlayableGame | undefined;
+  playable: PlayableItem | undefined;
+  baseRatio: BaseRatio;
+  orientation: Orientation;
+  setBaseRatio: (ratio: BaseRatio) => void;
+  setOrientation: (orientation: Orientation) => void;
+  onOpenFullscreen: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const playableUrl = playable ? publicAssetPath(playable.url) : "";
 
-  const activeGame = useMemo(
-    () => GAMES.find((g) => g.id === activeGameId) ?? GAMES[0],
-    [activeGameId]
-  );
-
-  const activePlayable = useMemo(
-    () => activeGame?.playables.find((p) => p.id === activePlayableId) ?? activeGame?.playables[0],
-    [activeGame, activePlayableId]
-  );
-
-  function selectGame(game: GameItem) {
-    if (expandedGameId === game.id) {
-      setExpandedGameId("");
-    } else {
-      setExpandedGameId(game.id);
+  useEffect(() => {
+    if (!playableUrl) {
+      setIsLoading(false);
+      setHasError(false);
+      return;
     }
-    const firstPlayable = game.playables[0];
-    setActiveGameId(game.id);
-    setActivePlayableId(firstPlayable?.id ?? "");
 
-    if (firstPlayable) {
-      setSelectedAspect(firstPlayable.aspect);
-    }
-  }
+    setIsLoading(true);
+    setHasError(false);
+  }, [playableUrl]);
 
-  function selectPlayable(game: GameItem, playable: PlayableItem) {
-    setActiveGameId(game.id);
-    setActivePlayableId(playable.id);
-
-    setSelectedAspect(playable.aspect);
+  if (!game || !playable) {
+    return (
+      <section className="relative">
+        <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 bg-white/5 p-6 text-center text-white/30 shadow-2xl md:min-h-[650px]">
+          <svg className="mb-4 h-12 w-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0 0 10 9.87v4.263a1 1 0 0 0 1.555.832l3.197-2.132a1 1 0 0 0 0-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+          </svg>
+          <p className="text-xs font-bold uppercase tracking-[0.2em]">Select a playable</p>
+          <p className="mt-2 max-w-sm text-sm text-white/25">
+            Choose an item from the library to load it in the test frame.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex">
-      <Sidebar title="Oğuz Han Dede" imageSrc="/portfolio/ben.png" />
+    <section className="relative">
+      <div className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl sm:p-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/20">
+              <Image
+                src={publicAssetPath(game.icon)}
+                alt={`${game.title} logo`}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="truncate text-xl font-bold text-white">{game.title}</h2>
+              <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[#8b8aef]">
+                {playable.title ?? playable.label}
+              </p>
+            </div>
+          </div>
 
-      <div className="flex-1 md:ml-80">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <select
+              value={baseRatio}
+              onChange={(event) => setBaseRatio(event.target.value as BaseRatio)}
+              aria-label="Frame ratio"
+              className="min-h-10 flex-1 cursor-pointer rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white/80 outline-none transition-all hover:border-[#8b8aef]/30 hover:bg-white/5 focus:ring-1 focus:ring-[#8b8aef]/50 sm:flex-none"
+            >
+              {RATIO_OPTIONS.map((ratio) => (
+                <option key={ratio} value={ratio} className="bg-zinc-900 text-white">
+                  {ratio}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => setOrientation(orientation === "Portrait" ? "Landscape" : "Portrait")}
+              className="min-h-10 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70 transition hover:border-[#8b8aef]/30 hover:bg-[#8b8aef]/10 hover:text-white focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50 sm:flex-none"
+            >
+              {orientation}
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenFullscreen}
+              disabled={!playable}
+              className="min-h-10 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70 transition hover:border-[#8b8aef]/30 hover:bg-[#8b8aef]/10 hover:text-white focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
+            >
+              Fullscreen
+            </button>
+          </div>
+        </div>
+
+        <div className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/5 bg-black/40 p-3 shadow-inner md:min-h-[650px] md:p-6">
+          <div
+            className="relative max-h-[70vh] w-full max-w-[760px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
+            style={{ aspectRatio: getFrameAspect(baseRatio, orientation) }}
+          >
+            <iframe
+              className="absolute inset-0 h-full w-full border-0"
+              src={playableUrl}
+              title={`${game.title} - ${playable.title ?? playable.label}`}
+              allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
+              sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+
+            {(isLoading || hasError) && (
+              <PlayableStatusOverlay hasError={hasError} />
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PlayableFullscreenModal({
+  game,
+  playable,
+  baseRatio,
+  orientation,
+  setBaseRatio,
+  setOrientation,
+  onClose,
+}: {
+  game: PlayableGame;
+  playable: PlayableItem;
+  baseRatio: BaseRatio;
+  orientation: Orientation;
+  setBaseRatio: (ratio: BaseRatio) => void;
+  setOrientation: (orientation: Orientation) => void;
+  onClose: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const playableUrl = publicAssetPath(playable.url);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+  }, [playableUrl]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-2 font-mono backdrop-blur-md sm:p-4">
+      <div className="flex h-[94vh] w-full max-w-7xl flex-col rounded-3xl border border-white/10 bg-[#0a0a0a] p-3 shadow-2xl sm:h-[92vh] sm:p-4 md:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/20">
+              <Image
+                src={publicAssetPath(game.icon)}
+                alt={`${game.title} logo`}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-lg font-bold text-white">{game.title}</div>
+              <div className="truncate text-xs font-bold uppercase tracking-wider text-[#8b8aef]">
+                {playable.title ?? playable.label}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <select
+              value={baseRatio}
+              onChange={(event) => setBaseRatio(event.target.value as BaseRatio)}
+              aria-label="Fullscreen frame ratio"
+              className="min-h-10 flex-1 cursor-pointer rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white/80 outline-none transition-all hover:border-[#8b8aef]/30 hover:bg-white/5 focus:ring-1 focus:ring-[#8b8aef]/50 sm:flex-none"
+            >
+              {RATIO_OPTIONS.map((ratio) => (
+                <option key={ratio} value={ratio} className="bg-zinc-900 text-white">
+                  {ratio}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => setOrientation(orientation === "Portrait" ? "Landscape" : "Portrait")}
+              className="min-h-10 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70 transition hover:border-[#8b8aef]/30 hover:bg-[#8b8aef]/10 hover:text-white focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50 sm:flex-none"
+            >
+              {orientation}
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="min-h-10 flex-1 rounded-xl border border-[#8b8aef]/30 bg-[#8b8aef]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#8b8aef] transition hover:bg-[#8b8aef]/20 hover:text-white focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50 sm:flex-none"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+
+        <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-white/5 bg-black/40 p-3 shadow-inner md:p-6">
+          <div
+            className="relative max-h-full w-full max-w-[1120px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
+            style={{ aspectRatio: getFrameAspect(baseRatio, orientation) }}
+          >
+            <iframe
+              className="absolute inset-0 h-full w-full border-0"
+              src={playableUrl}
+              title={`${game.title} - ${playable.title ?? playable.label} fullscreen`}
+              allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
+              sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+
+            {(isLoading || hasError) && (
+              <PlayableStatusOverlay hasError={hasError} />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function WorksPage() {
+  const initialGame = playableGames[0];
+  const initialPlayable = initialGame?.playables[0];
+  const [expandedGameIds, setExpandedGameIds] = useState<string[]>(
+    initialGame ? [initialGame.id] : []
+  );
+  const [selectedPlayable, setSelectedPlayable] = useState<SelectedPlayableState | null>(
+    initialGame && initialPlayable
+      ? { gameId: initialGame.id, playableId: initialPlayable.id }
+      : null
+  );
+  const [baseRatio, setBaseRatio] = useState<BaseRatio>("4:3");
+  const [orientation, setOrientation] = useState<Orientation>("Landscape");
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const [modalBaseRatio, setModalBaseRatio] = useState<BaseRatio>("4:3");
+  const [modalOrientation, setModalOrientation] = useState<Orientation>("Landscape");
+
+  const activeGame = useMemo(
+    () => playableGames.find((game) => game.id === selectedPlayable?.gameId),
+    [selectedPlayable]
+  );
+
+  const activePlayable = useMemo(
+    () => activeGame?.playables.find((playable) => playable.id === selectedPlayable?.playableId),
+    [activeGame, selectedPlayable]
+  );
+
+  function selectGame(game: PlayableGame) {
+    setExpandedGameIds((current) =>
+      current.includes(game.id)
+        ? current.filter((id) => id !== game.id)
+        : [...current, game.id]
+    );
+  }
+
+  function selectPlayable(game: PlayableGame, playable: PlayableItem) {
+    setSelectedPlayable({ gameId: game.id, playableId: playable.id });
+  }
+
+  function openFullscreen() {
+    if (!activePlayable) return;
+
+    setModalBaseRatio(baseRatio);
+    setModalOrientation(orientation);
+    setIsFullscreenOpen(true);
+  }
+
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex flex-col md:flex-row">
+      <Sidebar />
+
+      <div className="flex-1 min-w-0 md:ml-80">
         <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
-          {/* Header */}
-          <div className="flex items-end justify-between gap-4 border-b border-white/10 pb-6">
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-6">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight md:text-5xl bg-clip-text text-transparent bg-gradient-to-b from-white to-[#8b8aef]">
-                Projects
+                Playables
               </h1>
               <p className="mt-2 text-lg text-white/50">
                 Playable Ads & Interactive Experiences
@@ -76,30 +346,29 @@ export default function WorksPage() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[350px_1fr]">
-            {/* SOL: Oyun Listesi */}
+          <div className="mt-8 grid min-w-0 gap-8 lg:grid-cols-[350px_minmax(0,1fr)]">
             <section className="space-y-4">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#8b8aef] px-2">Library</div>
-              <div className="grid gap-2 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
-                {GAMES.map((g) => {
-                  const isExpanded = expandedGameId === g.id;
-                  const isActive = activeGameId === g.id;
+              <div className="px-2 text-xs font-bold uppercase tracking-wider text-[#8b8aef]">Library</div>
+              <div className="custom-scrollbar grid max-h-[45vh] gap-2 overflow-y-auto pr-2 lg:max-h-[70vh]">
+                {playableGames.map((game) => {
+                  const isExpanded = expandedGameIds.includes(game.id);
+                  const isActive = selectedPlayable?.gameId === game.id;
 
                   return (
-                    <div key={g.id} className="flex flex-col">
+                    <div key={game.id} className="flex flex-col">
                       <button
-                        onClick={() => selectGame(g)}
+                        onClick={() => selectGame(game)}
                         className={`
-                          group flex w-full items-center gap-4 rounded-2xl border p-3 text-left transition-all duration-300
+                          group flex w-full items-center gap-4 rounded-2xl border p-3 text-left transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
                           ${isActive
                             ? "border-[#8b8aef]/50 bg-[#8b8aef]/10 shadow-[0_0_20px_rgba(139,138,239,0.1)]"
-                            : "border-white/5 bg-black/40 hover:border-white/20 hover:bg-white/5"}
+                            : "border-white/5 bg-black/40 hover:border-[#8b8aef]/25 hover:bg-white/5"}
                         `}
                       >
                         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-inner">
                           <Image
-                            src={g.logo}
-                            alt={`${g.title} logo`}
+                            src={publicAssetPath(game.icon)}
+                            alt={`${game.title} logo`}
                             fill
                             className={`object-cover transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
                           />
@@ -107,39 +376,50 @@ export default function WorksPage() {
 
                         <div className="min-w-0 flex-1">
                           <div className={`truncate text-sm font-bold ${isActive ? "text-white" : "text-white/70"}`}>
-                            {g.title}
+                            {game.title}
                           </div>
                           <div className="mt-1 text-[10px] text-white/30">
-                            {g.playables.length} playable{g.playables.length > 1 ? "s" : ""}
+                            {game.playables.length} playable{game.playables.length > 1 ? "s" : ""}
                           </div>
                         </div>
 
                         <svg
-                          className={`w-4 h-4 shrink-0 text-[#8b8aef] transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`}
-                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          className={`h-4 w-4 shrink-0 text-[#8b8aef] transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
 
                       {isExpanded && (
-                        <div className="mt-1 ml-4 flex flex-col gap-1 border-l border-white/10 pl-3">
-                          {g.playables.map((p) => {
-                            const pActive = activePlayableId === p.id && activeGameId === g.id;
+                        <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-white/10 pl-3">
+                          {game.playables.length === 0 && (
+                            <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-3 text-xs font-bold uppercase tracking-widest text-white/25">
+                              No playables added yet.
+                            </div>
+                          )}
+
+                          {game.playables.map((playable, index) => {
+                            const playableActive = selectedPlayable?.playableId === playable.id && selectedPlayable?.gameId === game.id;
+
                             return (
                               <button
-                                key={p.id}
-                                onClick={() => selectPlayable(g, p)}
+                                key={playable.id}
+                                onClick={() => selectPlayable(game, playable)}
                                 className={`
-                                  flex items-center justify-between rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-all duration-200
-                                  ${pActive
+                                  flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
+                                  ${playableActive
                                     ? "border-[#8b8aef]/40 bg-[#8b8aef]/15 text-white"
-                                    : "border-white/5 bg-black/20 text-white/50 hover:border-white/15 hover:text-white/80"}
+                                    : "border-white/5 bg-black/20 text-white/50 hover:border-[#8b8aef]/25 hover:bg-white/5 hover:text-white/80"}
                                 `}
                               >
-                                <span>{p.label}</span>
-                                <span className={`rounded-md border px-1.5 py-0.5 text-[10px] font-normal ${pActive ? "border-[#8b8aef]/30 text-[#8b8aef]" : "border-white/10 text-white/30"}`}>
-                                  {p.aspect}
+                                <span className="flex min-w-0 items-center gap-2">
+                                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] ${playableActive ? "border-[#8b8aef]/30 text-[#8b8aef]" : "border-white/10 text-white/30"}`}>
+                                    {index + 1}
+                                  </span>
+                                  <span className="truncate">{playable.title ?? playable.label}</span>
                                 </span>
                               </button>
                             );
@@ -152,170 +432,30 @@ export default function WorksPage() {
               </div>
             </section>
 
-            {/* SAĞ: Oyun Önizleme Paneli */}
-            <section className="relative">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl shadow-2xl">
-                {activeGame && activePlayable ? (
-                  <>
-                    <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/20">
-                          <Image
-                            src={`/portfolio/${activeGame.logo}`}
-                            alt={`${activeGame.title} logo`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h2 className="text-xl font-bold text-white">{activeGame.title}</h2>
-                          <p className="text-xs text-[#8b8aef] font-medium uppercase tracking-wide mt-1">
-                            {activePlayable.label}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {/* Cihaz/Boyut Seçici */}
-                        <select
-                          value={selectedAspect}
-                          onChange={(e) => setSelectedAspect(e.target.value)}
-                          className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white/80 outline-none hover:bg-white/5 focus:ring-1 focus:ring-[#8b8aef]/50 transition-all cursor-pointer"
-                        >
-                          {DEVICE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-
-                        <a
-                          href={activePlayable.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-xs font-bold text-white/70 border border-white/10 transition hover:bg-white/10 hover:text-white"
-                        >
-                          Fullscreen
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-center items-center rounded-2xl bg-black/40 p-4 md:p-6 border border-white/5 shadow-inner min-h-[500px] md:min-h-[650px]">
-                      <div
-                        className="relative flex items-center justify-center transition-all duration-500 w-full h-full max-h-[600px]"
-                        style={{ aspectRatio: selectedAspect.replace(":", "/") }}
-                      >
-                        <PhonePlayable
-                          url={activePlayable.url}
-                          title={`${activeGame.title} – ${activePlayable.label}`}
-                          logo={activeGame.logo}
-                          aspect={selectedAspect}
-                        />
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex h-[400px] flex-col items-center justify-center text-white/30">
-                    <svg className="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p>Select a game to preview</p>
-                  </div>
-                )}
-              </div>
-            </section>
+            <PlayableTestFrame
+              game={activeGame}
+              playable={activePlayable}
+              baseRatio={baseRatio}
+              orientation={orientation}
+              setBaseRatio={setBaseRatio}
+              setOrientation={setOrientation}
+              onOpenFullscreen={openFullscreen}
+            />
           </div>
         </div>
+      </div>
 
-        <MobileDrawer
-          activeGame={activeGame}
-          activePlayable={activePlayable ?? null}
-          selectedAspect={selectedAspect}
-          setSelectedAspect={setSelectedAspect}
+      {isFullscreenOpen && activeGame && activePlayable && (
+        <PlayableFullscreenModal
+          game={activeGame}
+          playable={activePlayable}
+          baseRatio={modalBaseRatio}
+          orientation={modalOrientation}
+          setBaseRatio={setModalBaseRatio}
+          setOrientation={setModalOrientation}
+          onClose={() => setIsFullscreenOpen(false)}
         />
-      </div>
-    </main>
-  );
-}
-
-function MobileDrawer({
-  activeGame,
-  activePlayable,
-  selectedAspect,
-  setSelectedAspect,
-}: {
-  activeGame: GameItem | undefined;
-  activePlayable: PlayableItem | null;
-  selectedAspect: string;
-  setSelectedAspect: (val: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  if (!activeGame || !activePlayable) return null;
-
-  return (
-    <>
-      <div className="mt-6 lg:hidden font-mono">
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full rounded-2xl bg-[#8b8aef] px-4 py-4 text-sm font-extrabold text-white shadow-lg shadow-[#8b8aef]/20"
-        >
-          Play — {activeGame.title} · {activePlayable.label}
-        </button>
-      </div>
-
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden font-mono">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-0 flex flex-col h-full w-[95vw] border-l border-white/10 bg-[#0a0a0a] p-6 shadow-2xl animate-in slide-in-from-right duration-300">
-            <div className="mb-6 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-[#8b8aef] uppercase tracking-widest text-xs">Play Mode</div>
-                  <div className="text-white/50 text-xs mt-1">{activeGame.title} · {activePlayable.label}</div>
-                </div>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-white/10"
-                >
-                  Close
-                </button>
-              </div>
-
-              {/* Mobil görünüm için ekran seçici */}
-              <select
-                value={selectedAspect}
-                onChange={(e) => setSelectedAspect(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm font-bold text-white/80 outline-none focus:ring-1 focus:ring-[#8b8aef]/50 cursor-pointer"
-              >
-                {DEVICE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex-1 flex items-center justify-center overflow-hidden p-2">
-              <div
-                className="relative flex items-center justify-center w-full h-full max-h-[80vh] transition-all duration-500"
-                style={{ aspectRatio: selectedAspect.replace(":", "/") }}
-              >
-                <PhonePlayable
-                  url={activePlayable.url}
-                  title={`${activeGame.title} – ${activePlayable.label}`}
-                  logo={activeGame.logo}
-                  aspect={selectedAspect}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
       )}
-    </>
+    </main>
   );
 }
