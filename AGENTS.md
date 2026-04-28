@@ -82,6 +82,22 @@ src/data/socialLinks.js
 
 Adding a new project, playable, or creative should not require changing layout/component logic.
 
+Current implementation uses root-level TypeScript data files under `data/`.
+
+Local playable builds should be stored as:
+
+```text
+public/playables/<game-id>/<version>/index.html
+```
+
+Local creative videos should be stored as:
+
+```text
+public/videos/creatives/<game-id>/<file-name>.mp4
+```
+
+Data files should reference internal public paths without `/portfolio`; the existing base path helper resolves them for GitHub Pages.
+
 ## Codex Working Rules
 
 When making changes:

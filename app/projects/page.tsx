@@ -3,14 +3,29 @@
 import Image from "next/image";
 import Sidebar from "@/components/Sidebar";
 import { projectCategories, projects, type ProjectItem } from "@/data/projects";
+import projectMetadata from "@/data/generated/projectMetadata.json";
 import { publicAssetPath } from "@/lib/paths";
 
+type GeneratedProjectMetadata = {
+  title?: string;
+  description?: string;
+  image?: string;
+  remoteImage?: string;
+  source?: string;
+};
+
+const generatedProjectMetadata = projectMetadata as Record<string, GeneratedProjectMetadata>;
+
 function resolveProjectImage(project: ProjectItem) {
-  return project.image ?? project.logo ?? null;
+  return project.image ?? project.logo ?? generatedProjectMetadata[project.id]?.image ?? null;
 }
 
 function resolveProjectDescription(project: ProjectItem) {
-  return project.description ?? project.desc ?? "Project details will be added soon.";
+  return project.description ?? project.desc ?? generatedProjectMetadata[project.id]?.description ?? "Project details will be added soon.";
+}
+
+function resolveProjectTitle(project: ProjectItem) {
+  return project.title ?? generatedProjectMetadata[project.id]?.title ?? "Untitled Project";
 }
 
 function resolveProjectLinks(project: ProjectItem) {
@@ -19,10 +34,16 @@ function resolveProjectLinks(project: ProjectItem) {
   return [];
 }
 
+function resolvePrimaryProjectLink(project: ProjectItem) {
+  const links = resolveProjectLinks(project);
+  if (!project.primaryLinkId) return links[0];
+  return links.find((link) => link.id === project.primaryLinkId || link.label === project.primaryLinkId) ?? links[0];
+}
+
 function ProjectCard({ project }: { project: ProjectItem }) {
   const image = resolveProjectImage(project);
-  const links = resolveProjectLinks(project);
-  const primaryLink = links[0];
+  const title = resolveProjectTitle(project);
+  const primaryLink = resolvePrimaryProjectLink(project);
   const cardClasses = "group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-black/40 transition-all duration-300 focus-within:border-[#8b8aef]/40 focus-within:bg-[#8b8aef]/5";
   const linkedCardClasses = "hover:-translate-y-1 hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/5 hover:shadow-[0_0_30px_rgba(139,138,239,0.08)] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50";
   const cardContent = (
@@ -31,7 +52,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
         {image ? (
           <Image
             src={publicAssetPath(image)}
-            alt={`${project.title} thumbnail`}
+            alt={`${title} thumbnail`}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -49,7 +70,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
       <div className="flex flex-1 flex-col gap-2.5 p-3.5">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-sm font-extrabold text-white leading-tight group-hover:text-[#8b8aef] transition-colors duration-200">
-            {project.title}
+            {title}
           </h2>
           <span className="w-4 h-4 shrink-0 text-white/20 group-hover:text-[#8b8aef] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 mt-0.5">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +95,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
         target="_blank"
         rel="noopener noreferrer"
         className={`${cardClasses} ${linkedCardClasses}`}
-        aria-label={`Open ${project.title}`}
+        aria-label={`Open ${title}`}
       >
         {cardContent}
       </a>

@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "fetch-project-metadata": "node scripts/fetch-project-metadata.mjs",
+    "suggest-content-data": "node scripts/suggest-content-data.mjs",
     "start": "next start"
   },
   "dependencies": {

@@ -90,13 +90,26 @@ When deployed under `/portfolio/`, the actual browser path may need to resolve a
 
 Playable URLs may be external browser-runnable HTML links.
 
-Local playable URLs may be supported later.
+Local playable URLs are supported through public static files.
 
 Rules:
 
 - Do not assume all playable URLs are local.
 - External URLs should be passed directly to iframe `src`.
 - Internal URLs should be base-path-safe.
+- Local playable builds should be stored as `public/playables/<game-id>/<version>/index.html`.
+- Data should reference local builds without `/portfolio`, for example `/playables/arcane-arena/v1/index.html`.
+- Under GitHub Pages, the helper should resolve that to `/portfolio/playables/arcane-arena/v1/index.html`.
+
+## Creative Video URLs
+
+Creative MP4 files are static public assets.
+
+Rules:
+
+- Store creative MP4 files as `public/videos/creatives/<game-id>/<file-name>.mp4`.
+- Data should reference local videos without `/portfolio`, for example `/videos/creatives/raid-rush/raid-rush-creative-1.mp4`.
+- Under GitHub Pages, the helper should resolve that to `/portfolio/videos/creatives/raid-rush/raid-rush-creative-1.mp4`.
 
 ## External Links
 

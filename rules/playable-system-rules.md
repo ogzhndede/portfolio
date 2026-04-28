@@ -93,11 +93,10 @@ Variant example:
 
 ```js
 {
-  id: "playable-1",
-  title: "Playable 1",
+  id: "arcane-arena-v1",
+  title: "Arcane Arena 1",
   variants: [
-    { id: "v1", label: "1", url: "https://example.com/playable-1-v1/index.html" },
-    { id: "v2", label: "2", url: "https://example.com/playable-1-v2/index.html" }
+    { id: "v1", label: "1", url: "/playables/arcane-arena/v1/index.html" }
   ]
 }
 ```
@@ -109,6 +108,38 @@ Rules:
 - If a playable has both URL and variants, prefer the selected variant, otherwise the first variant, otherwise the direct URL.
 - Variant changes may reload the iframe.
 - Ratio/orientation changes must not reload the selected variant iframe.
+
+## Local Playable Folder Convention
+
+Local playable builds belong under `public/playables`.
+
+Each folder directly under `public/playables` is a game folder:
+
+```text
+public/playables/arcane-arena/
+public/playables/raid-rush/
+```
+
+Each game folder contains version folders such as `v1`, `v2`, and `v3`.
+Each version folder should contain one playable entry file:
+
+```text
+public/playables/arcane-arena/v1/index.html
+public/playables/arcane-arena/v2/index.html
+public/playables/raid-rush/v1/index.html
+```
+
+Data files should reference these as runtime URLs without the GitHub Pages base path:
+
+```text
+/playables/arcane-arena/v1/index.html
+/playables/arcane-arena/v2/index.html
+/playables/raid-rush/v1/index.html
+```
+
+The app's public asset helper resolves those paths to `/portfolio/...` during GitHub Pages deployment.
+
+If multiple playable builds exist, prefer separate version folders. Avoid placing multiple entry HTML files in the same version folder.
 
 ## Supported Ratios
 

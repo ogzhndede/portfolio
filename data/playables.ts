@@ -26,17 +26,23 @@ export type PlayableGame = {
 
 export const playableGames: PlayableGame[] = [
   {
-    id: "raidrush",
-    title: "RaidRush",
-    icon: "/images/playables/g1.png",
-    logo: "/images/playables/g1.png",
+    id: "raid-rush",
+    title: "Raid Rush",
+    icon: "/images/playables/raid_rush_icon.png",
+    logo: "/images/playables/raid_rush_icon.png",
     desc: "Fast-paced raid action game",
     playables: [
       {
-        id: "raidrush-v1",
-        label: "RaidRush 1",
-        title: "RaidRush 1",
-        url: "/playables/g1/index.html",
+        id: "raid-rush-v1",
+        label: "Raid Rush 1",
+        title: "Raid Rush 1",
+        variants: [
+          {
+            id: "v1",
+            label: "1",
+            url: "/playables/raid-rush/v1/index.html",
+          },
+        ],
         aspect: "9:20",
       },
     ],
@@ -44,22 +50,34 @@ export const playableGames: PlayableGame[] = [
   {
     id: "arcane-arena",
     title: "Arcane Arena",
-    icon: "/images/playables/g2.png",
-    logo: "/images/playables/g2.png",
+    icon: "/images/playables/arcane_arena_icon.png",
+    logo: "/images/playables/arcane_arena_icon.png",
     desc: "Strategic arena battle experience",
     playables: [
       {
-        id: "arcane-v1",
+        id: "arcane-arena-v1",
         label: "Arcane Arena 1",
         title: "Arcane Arena 1",
-        url: "/playables/g2/index.html",
+        variants: [
+          {
+            id: "v1",
+            label: "1",
+            url: "/playables/arcane-arena/v1/index.html",
+          },
+        ],
         aspect: "4:3",
       },
       {
-        id: "arcane-v2",
+        id: "arcane-arena-v2",
         label: "Arcane Arena 2",
         title: "Arcane Arena 2",
-        url: "/playables/g3/index.html",
+        variants: [
+          {
+            id: "v1",
+            label: "1",
+            url: "/playables/arcane-arena/v2/index.html",
+          },
+        ],
         aspect: "9:16",
       },
     ],
