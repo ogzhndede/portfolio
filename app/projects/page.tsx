@@ -22,10 +22,11 @@ function resolveProjectLinks(project: ProjectItem) {
 function ProjectCard({ project }: { project: ProjectItem }) {
   const image = resolveProjectImage(project);
   const links = resolveProjectLinks(project);
-  const tags = project.platformTags ?? [];
-
-  return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-black/40 transition-all duration-300 hover:-translate-y-1 hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/5 hover:shadow-[0_0_30px_rgba(139,138,239,0.08)] focus-within:border-[#8b8aef]/40 focus-within:bg-[#8b8aef]/5">
+  const primaryLink = links[0];
+  const cardClasses = "group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-black/40 transition-all duration-300 focus-within:border-[#8b8aef]/40 focus-within:bg-[#8b8aef]/5";
+  const linkedCardClasses = "hover:-translate-y-1 hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/5 hover:shadow-[0_0_30px_rgba(139,138,239,0.08)] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50";
+  const cardContent = (
+    <>
       <div className="relative w-full aspect-video overflow-hidden bg-white/5">
         {image ? (
           <Image
@@ -60,42 +61,29 @@ function ProjectCard({ project }: { project: ProjectItem }) {
         <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
           {resolveProjectDescription(project)}
         </p>
-
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-white/40"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-auto flex flex-wrap gap-2 pt-2">
-          {links.length > 0 ? (
-            links.map((link) => (
-              <a
-                key={`${project.id}-${link.label}-${link.url}`}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white/60 transition hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/10 hover:text-[#8b8aef] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50"
-              >
-                {link.label}
-              </a>
-            ))
-          ) : (
-            <span className="rounded-lg border border-white/5 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white/25">
-              Link coming soon
-            </span>
-          )}
-        </div>
       </div>
 
       <div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-[#8b8aef]/0 via-[#8b8aef]/60 to-[#8b8aef]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    </>
+  );
+
+  if (primaryLink) {
+    return (
+      <a
+        href={primaryLink.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${cardClasses} ${linkedCardClasses}`}
+        aria-label={`Open ${project.title}`}
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <article className={cardClasses}>
+      {cardContent}
     </article>
   );
 }

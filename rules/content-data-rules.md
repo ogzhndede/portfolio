@@ -73,8 +73,8 @@ Required categories:
 
 ```js
 export const projectCategories = [
-  "Game Jam Projects",
   "Mobile Games",
+  "Game Jam Projects",
   "Steam Projects"
 ];
 ```

@@ -19,8 +19,8 @@ export type ProjectItem = {
 };
 
 export const projectCategories: ProjectCategory[] = [
-  "Game Jam Projects",
   "Mobile Games",
+  "Game Jam Projects",
   "Steam Projects",
 ];
 

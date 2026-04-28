@@ -515,9 +515,6 @@ export default function WorksPage() {
                                     <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] ${playableActive ? "border-[#8b8aef]/35 text-[#8b8aef]" : "border-white/10 text-white/35"}`}>
                                       {index + 1}
                                     </span>
-                                    <span className="line-clamp-2 text-[10px] leading-tight">
-                                      {playable.title ?? playable.label}
-                                    </span>
                                   </button>
                                 );
                               })}

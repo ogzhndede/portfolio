@@ -137,8 +137,8 @@ Each card may include:
 
 Projects should be grouped or filterable by category:
 
-- Game Jam Projects
 - Mobile Games
+- Game Jam Projects
 - Steam Projects
 
 Clicking a project or link should navigate to an external URL.
