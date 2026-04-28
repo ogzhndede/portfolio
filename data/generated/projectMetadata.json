@@ -1,1 +1,132 @@
-{}
+{
+  "pen-dig": {
+    "projectId": "pen-dig",
+    "sourceUrl": "https://play.google.com/store/apps/details?id=com.DoDoGame.PenDig",
+    "source": "Google Play",
+    "title": "Pen Dig - Apps on Google Play",
+    "description": "Dig the ground using a pen and build a city!",
+    "remoteImage": "https://play-lh.googleusercontent.com/2A-Ke0tfx9C81BFOrDzjp6DgqJfPBukCdkDU4UjB0PSt6LqBNf0mYz-ffV5ud6UV4w",
+    "image": "/images/projects/generated/pen-dig.png",
+    "fetchedAt": "2026-04-28T20:09:15.022Z"
+  },
+  "color-pools": {
+    "projectId": "color-pools",
+    "sourceUrl": "https://apps.apple.com/us/app/color-pools/id1639554624",
+    "source": "App Store",
+    "title": "Color Pools! App - App Store",
+    "description": "Download Color Pools! by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Color Pools!.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple122/v4/54/06/7c/54067c3f-7991-5d8d-c3a2-87bc00ba574e/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/color-pools.jpg",
+    "fetchedAt": "2026-04-28T20:09:15.855Z"
+  },
+  "discount-run": {
+    "projectId": "discount-run",
+    "sourceUrl": "https://apps.apple.com/us/app/discount-run/id6443568868",
+    "source": "App Store",
+    "title": "Discount Run. App - App Store",
+    "description": "Download Discount Run. by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Discount Run..",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple122/v4/1e/f6/70/1ef670d5-139d-cefb-4e09-04dd0d06608a/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/discount-run.jpg",
+    "fetchedAt": "2026-04-28T20:09:17.582Z"
+  },
+  "airport-management": {
+    "projectId": "airport-management",
+    "sourceUrl": "https://apps.apple.com/us/app/airport-management/id1632240557",
+    "source": "App Store",
+    "title": "Airport Management App - App Store",
+    "description": "Download Airport Management by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Airport Management.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple112/v4/a1/98/c9/a198c954-3eda-7a48-1be2-2fcf1a807fa8/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/airport-management.jpg",
+    "fetchedAt": "2026-04-28T20:09:18.552Z"
+  },
+  "sculling-asmr": {
+    "projectId": "sculling-asmr",
+    "sourceUrl": "https://apps.apple.com/us/app/scullingasmr/id6477461973",
+    "source": "App Store",
+    "title": "ScullingASMR App - App Store",
+    "description": "Download ScullingASMR by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like ScullingASMR.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/c4/1c/ad/c41cadcc-84d1-fb96-4742-b4b2841ea11f/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/sculling-asmr.jpg",
+    "fetchedAt": "2026-04-28T20:09:19.081Z"
+  },
+  "water-cut-coin": {
+    "projectId": "water-cut-coin",
+    "sourceUrl": "https://apps.apple.com/us/app/water-cut-coin/id6476575955",
+    "source": "App Store",
+    "title": "Water Cut Coin App - App Store",
+    "description": "Download Water Cut Coin by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Water Cut Coin.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/ef/9a/61/ef9a6184-7391-f551-f988-a0c6e0fc11f2/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/water-cut-coin.jpg",
+    "fetchedAt": "2026-04-28T20:09:20.174Z"
+  },
+  "one-gun-run": {
+    "projectId": "one-gun-run",
+    "sourceUrl": "https://apps.apple.com/us/app/one-gun-run/id6471838989",
+    "source": "App Store",
+    "title": "One Gun Run App - App Store",
+    "description": "Download One Gun Run by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like One Gun Run.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/cc/44/65/cc446592-caf9-74d9-96d3-0220f6347ade/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/one-gun-run.jpg",
+    "fetchedAt": "2026-04-28T20:09:21.207Z"
+  },
+  "currency-mining": {
+    "projectId": "currency-mining",
+    "sourceUrl": "https://apps.apple.com/us/app/currency-mining/id1661259832",
+    "source": "App Store",
+    "title": "Currency Mining App - App Store",
+    "description": "Download Currency Mining by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Currency Mining.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/40/0b/80/400b80ec-ddc9-23f1-5af1-93fe62ad04af/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/currency-mining.jpg",
+    "fetchedAt": "2026-04-28T20:09:22.390Z"
+  },
+  "color-down-stairs": {
+    "projectId": "color-down-stairs",
+    "sourceUrl": "https://apps.apple.com/us/app/color-down-stairs/id1644718035",
+    "source": "App Store",
+    "title": "Color Down Stairs App - App Store",
+    "description": "Download Color Down Stairs by DoDo Game Co on the App Store. See screenshots, ratings and reviews, user tips, and more apps like Color Down Stairs.",
+    "remoteImage": "https://is1-ssl.mzstatic.com/image/thumb/Purple122/v4/7c/0a/78/7c0a7828-9571-014f-2330-8b6482a27bdf/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.jpg",
+    "image": "/images/projects/generated/color-down-stairs.jpg",
+    "fetchedAt": "2026-04-28T20:09:23.430Z"
+  },
+  "the-man-behind": {
+    "projectId": "the-man-behind",
+    "sourceUrl": "https://justbadcode.itch.io/the-man-behind",
+    "source": "Itch.io",
+    "title": "The Man Behind by justbadcode, Avenux, DeahShot, witchiewitch",
+    "description": "Baskanlık makamını alıp hak ettigin yere gelmek için ne kadar ileri gidebilirsin?",
+    "remoteImage": "https://img.itch.zone/aW1nLzEwMDYyNjk5LnBuZw==/original/iPVX1p.png",
+    "image": "/images/projects/generated/the-man-behind.png",
+    "fetchedAt": "2026-04-28T20:09:25.177Z"
+  },
+  "buzzs-sketchbook": {
+    "projectId": "buzzs-sketchbook",
+    "sourceUrl": "https://witchiewitch.itch.io/buzzs-sketchbook",
+    "source": "Itch.io",
+    "title": "Buzzs Sketchbook by witchiewitch, Avenux, justbadcode, DeahShot, erasruno",
+    "description": "12 level&#039;dan oluşan bu puzzle oyunu, Buzz adında bir çocuğun uzaya çıkma hayalinin kendi not defterine yansıması",
+    "remoteImage": "https://img.itch.zone/aW1nLzEwNzU3MjAyLnBuZw==/original/1MCkox.png",
+    "image": "/images/projects/generated/buzzs-sketchbook.png",
+    "fetchedAt": "2026-04-28T20:09:27.055Z"
+  },
+  "inverser": {
+    "projectId": "inverser",
+    "sourceUrl": "https://witchiewitch.itch.io/inverser",
+    "source": "Itch.io",
+    "title": "Inverser by witchiewitch",
+    "description": "the experimented or the experimenter?",
+    "remoteImage": "https://img.itch.zone/aW1nLzEyNzQ1MTg4LnBuZw==/original/FI4Gqt.png",
+    "image": "/images/projects/generated/inverser.png",
+    "fetchedAt": "2026-04-28T20:09:28.645Z"
+  },
+  "ad-agency-simulator": {
+    "projectId": "ad-agency-simulator",
+    "sourceUrl": "https://store.steampowered.com/app/2701980/Ad_Agency_Simulator/",
+    "source": "Steam",
+    "title": "Ad Agency Simulator on Steam",
+    "description": "Ad Agency Simulator offers a realistic simulation experience for those looking to embark on a career in the advertising industry. Are you ready to start creating your own advertising designs and managing your advertising agency, starting from a small advertising office?",
+    "remoteImage": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2701980/capsule_616x353.jpg?t=1730223183",
+    "image": "/images/projects/generated/ad-agency-simulator.jpg",
+    "fetchedAt": "2026-04-28T20:09:29.510Z"
+  }
+}

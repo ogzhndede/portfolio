@@ -17,31 +17,59 @@ function CreativePlaceholder() {
   );
 }
 
+function GameGroupHeading({
+  title,
+  icon,
+  count,
+}: {
+  title: string;
+  icon?: string;
+  count: number;
+}) {
+  if (!title && !icon) return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
+      <div className="flex min-w-0 items-center gap-3">
+        {icon ? (
+          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+            <Image
+              src={publicAssetPath(icon)}
+              alt={`${title} icon`}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[9px] font-bold uppercase text-white/25">
+            Ad
+          </div>
+        )}
+        <h2 className="truncate text-base font-bold uppercase tracking-wider text-[#8b8aef] md:text-lg">
+          {title}
+        </h2>
+      </div>
+      <div className="hidden h-px flex-1 bg-white/10 sm:block" />
+      <span className="text-[10px] font-bold uppercase tracking-widest text-white/25">
+        {count} creative{count === 1 ? "" : "s"}
+      </span>
+    </div>
+  );
+}
+
 function GameBadge({ creative }: { creative: CreativeItem }) {
-  if (!creative.gameTitle && !creative.gameIcon) return null;
+  if (!creative.gameIcon) return null;
 
   return (
     <div className="flex min-w-0 items-center gap-2 text-white/40">
-      {creative.gameIcon ? (
-        <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5">
+      <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5">
           <Image
             src={publicAssetPath(creative.gameIcon)}
             alt={creative.gameTitle ? `${creative.gameTitle} icon` : "Game icon"}
             fill
             className="object-cover"
           />
-        </div>
-      ) : (
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[9px] font-bold uppercase text-white/25">
-          Ad
-        </div>
-      )}
-
-      {creative.gameTitle && (
-        <span className="truncate text-[10px] font-bold uppercase tracking-widest">
-          {creative.gameTitle}
-        </span>
-      )}
+      </div>
     </div>
   );
 }
@@ -87,10 +115,7 @@ function CreativeCard({
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-extrabold leading-tight text-white transition-colors duration-200 group-hover:text-[#8b8aef]">
-              {creative.title}
-            </h2>
-            <div className="mt-2">
+            <div>
               <GameBadge creative={creative} />
             </div>
           </div>
@@ -110,7 +135,7 @@ function CreativeCard({
           }}
           className="mt-auto rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-white/60 transition hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/10 hover:text-[#8b8aef] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50"
         >
-          View Creative
+          Fullscreen
         </button>
       </div>
 
@@ -192,6 +217,24 @@ function CreativeModal({
 
 export default function CreativesPage() {
   const [selectedCreative, setSelectedCreative] = useState<CreativeItem | null>(null);
+  const creativeGroups = creatives.reduce<Array<{ title: string; icon?: string; items: CreativeItem[] }>>((groups, creative) => {
+    const title = creative.gameTitle || "Ungrouped";
+    const existingGroup = groups.find((group) => group.title === title);
+
+    if (existingGroup) {
+      existingGroup.items.push(creative);
+      if (!existingGroup.icon && creative.gameIcon) existingGroup.icon = creative.gameIcon;
+      return groups;
+    }
+
+    groups.push({
+      title,
+      icon: creative.gameIcon,
+      items: [creative],
+    });
+
+    return groups;
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white font-mono flex flex-col md:flex-row">
@@ -209,13 +252,20 @@ export default function CreativesPage() {
           </div>
 
           {creatives.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {creatives.map((creative) => (
-                <CreativeCard
-                  key={creative.id}
-                  creative={creative}
-                  onSelect={setSelectedCreative}
-                />
+            <div className="space-y-12">
+              {creativeGroups.map((group) => (
+                <section key={group.title} className="space-y-5">
+                  <GameGroupHeading title={group.title} icon={group.icon} count={group.items.length} />
+                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {group.items.map((creative) => (
+                      <CreativeCard
+                        key={creative.id}
+                        creative={creative}
+                        onSelect={setSelectedCreative}
+                      />
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
           ) : (

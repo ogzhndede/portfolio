@@ -94,11 +94,25 @@ function findMeta(html, keys) {
   const metaTags = html.match(/<meta\b[^>]*>/gi) ?? [];
 
   for (const tag of metaTags) {
-    const property = getAttribute(tag, "property") ?? getAttribute(tag, "name");
+    const property = getAttribute(tag, "property") ?? getAttribute(tag, "name") ?? getAttribute(tag, "itemprop");
     if (!property || !keys.includes(property.toLowerCase())) continue;
 
     const content = getAttribute(tag, "content");
     if (content) return decodeHtml(content);
+  }
+
+  return "";
+}
+
+function findLinkHref(html, relValues) {
+  const linkTags = html.match(/<link\b[^>]*>/gi) ?? [];
+
+  for (const tag of linkTags) {
+    const rel = getAttribute(tag, "rel")?.toLowerCase();
+    if (!rel || !relValues.some((value) => rel.split(/\s+/).includes(value))) continue;
+
+    const href = getAttribute(tag, "href");
+    if (href) return decodeHtml(href);
   }
 
   return "";
@@ -176,6 +190,12 @@ async function fileExists(filePath) {
   }
 }
 
+async function generatedPublicPathExists(publicPath) {
+  if (!publicPath?.startsWith("/images/projects/generated/")) return false;
+  const fileName = path.basename(publicPath);
+  return fileExists(path.join(IMAGE_DIR, fileName));
+}
+
 async function downloadImage(project, imageUrl) {
   if (!imageUrl) return "";
 
@@ -221,15 +241,17 @@ async function fetchProjectMetadata(project, primaryLink) {
   const html = await response.text();
   const title = findMeta(html, ["og:title"]) || findMeta(html, ["twitter:title"]) || findTitle(html);
   const description = findMeta(html, ["og:description"]) || findMeta(html, ["twitter:description"]) || findMeta(html, ["description"]);
-  const imageUrl = absolutizeUrl(
-    findMeta(html, ["og:image", "og:image:url", "og:image:secure_url"]) || findMeta(html, ["twitter:image", "twitter:image:src"]),
-    primaryLink.url
-  );
+  const imageCandidate =
+    findMeta(html, ["og:image", "og:image:url", "og:image:secure_url"]) ||
+    findMeta(html, ["twitter:image", "twitter:image:src"]) ||
+    findMeta(html, ["image", "thumbnailurl"]) ||
+    findLinkHref(html, ["image_src"]);
+  const imageUrl = absolutizeUrl(imageCandidate, primaryLink.url);
 
   let generatedImage = "";
   let imageDownloadError = "";
 
-  if (!project.image && imageUrl) {
+  if (!project.image && !project.logo && imageUrl) {
     try {
       generatedImage = await downloadImage(project, imageUrl);
     } catch (error) {
@@ -270,8 +292,32 @@ async function main() {
     }
 
     if (!FORCE && nextMetadata[project.id]?.sourceUrl === primaryLink.url) {
-      console.log(`- ${project.id}: skipped, metadata already exists (use --force to refresh)`);
-      continue;
+      const metadata = nextMetadata[project.id];
+      const hasGeneratedImage = Boolean(project.image || project.logo || (metadata?.image && await generatedPublicPathExists(metadata.image)));
+      const hasUsefulMetadata = Boolean(metadata?.title || metadata?.description || metadata?.remoteImage);
+
+      if (hasUsefulMetadata && hasGeneratedImage) {
+        console.log(`- ${project.id}: skipped, metadata and image already exist (use --force to refresh)`);
+        continue;
+      }
+
+      if (hasUsefulMetadata && !hasGeneratedImage && metadata?.remoteImage) {
+        try {
+          console.log(`- ${project.id}: downloading missing generated image`);
+          nextMetadata[project.id] = {
+            ...metadata,
+            image: await downloadImage(project, metadata.remoteImage),
+            fetchedAt: new Date().toISOString(),
+          };
+          console.log(`  ok: ${nextMetadata[project.id].image}`);
+          continue;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`  image failed: ${message}`);
+        }
+      }
+
+      console.log(`- ${project.id}: refreshing incomplete metadata`);
     }
 
     try {

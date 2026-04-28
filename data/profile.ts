@@ -10,6 +10,6 @@ export const profile: Profile = {
   name: "Oğuz Han Dede",
   title: "Game / Playable Ads Developer",
   location: "ANKARA",
-  profileImage: "/images/profile/ben.png",
+  profileImage: "/images/profile/profile-picture.png",
   greeting: "Hi, I'm Oğuz Han Dede",
 };

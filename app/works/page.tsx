@@ -181,7 +181,7 @@ function PlayableTestFrame({
           </div>
         </div>
 
-        {variants.length > 0 && (
+        {variants.length > 1 && (
           <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-white/5 pb-6">
             <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
               Variants
@@ -243,6 +243,9 @@ function PlayableFullscreenModal({
   game,
   playable,
   playableUrl,
+  selectedVariant,
+  selectedVariantId,
+  onSelectVariant,
   baseRatio,
   orientation,
   setBaseRatio,
@@ -252,6 +255,9 @@ function PlayableFullscreenModal({
   game: PlayableGame;
   playable: PlayableItem;
   playableUrl: string;
+  selectedVariant: PlayableVariant | undefined;
+  selectedVariantId: string | undefined;
+  onSelectVariant: (variantId: string) => void;
   baseRatio: BaseRatio;
   orientation: Orientation;
   setBaseRatio: (ratio: BaseRatio) => void;
@@ -260,6 +266,7 @@ function PlayableFullscreenModal({
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const variants = getPlayableVariants(playable);
   const resolvedPlayableUrl = publicAssetPath(playableUrl);
 
   useEffect(() => {
@@ -329,6 +336,33 @@ function PlayableFullscreenModal({
           </div>
         </div>
 
+        {variants.length > 1 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
+            <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+              Variants
+            </span>
+            {variants.map((variant, index) => {
+              const active = selectedVariant?.id === variant.id || selectedVariantId === variant.id;
+
+              return (
+                <button
+                  key={variant.id}
+                  type="button"
+                  onClick={() => onSelectVariant(variant.id)}
+                  className={`
+                    flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-xs font-bold uppercase tracking-widest transition focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
+                    ${active
+                      ? "border-[#8b8aef]/50 bg-[#8b8aef]/15 text-white"
+                      : "border-white/10 bg-white/5 text-white/45 hover:border-[#8b8aef]/30 hover:bg-[#8b8aef]/10 hover:text-white"}
+                  `}
+                >
+                  {variant.label || index + 1}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-white/5 bg-black/40 p-3 shadow-inner md:p-6">
           <div
             className="relative max-h-[72vh] max-w-[1120px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
@@ -374,6 +408,7 @@ export default function WorksPage() {
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const [modalBaseRatio, setModalBaseRatio] = useState<BaseRatio>(DEFAULT_RATIO);
   const [modalOrientation, setModalOrientation] = useState<Orientation>(DEFAULT_ORIENTATION);
+  const [modalVariantId, setModalVariantId] = useState<string | undefined>(undefined);
 
   const activeGame = useMemo(
     () => playableGames.find((game) => game.id === selectedPlayable?.gameId),
@@ -393,6 +428,16 @@ export default function WorksPage() {
   const activePlayableUrl = useMemo(
     () => resolvePlayableUrl(activePlayable, selectedPlayable?.variantId),
     [activePlayable, selectedPlayable]
+  );
+
+  const modalVariant = useMemo(
+    () => getSelectedVariant(activePlayable, modalVariantId),
+    [activePlayable, modalVariantId]
+  );
+
+  const modalPlayableUrl = useMemo(
+    () => resolvePlayableUrl(activePlayable, modalVariantId),
+    [activePlayable, modalVariantId]
   );
 
   function selectGame(game: PlayableGame) {
@@ -416,6 +461,7 @@ export default function WorksPage() {
 
     setModalBaseRatio(baseRatio ?? DEFAULT_RATIO);
     setModalOrientation(orientation ?? DEFAULT_ORIENTATION);
+    setModalVariantId(selectedPlayable?.variantId ?? getDefaultVariantId(activePlayable));
     setIsFullscreenOpen(true);
   }
 
@@ -493,9 +539,9 @@ export default function WorksPage() {
 
                           {game.playables.length > 0 && (
                             <div
-                              className="grid justify-center gap-2"
+                              className="grid justify-center gap-1.5"
                               style={{
-                                gridTemplateColumns: `repeat(${getFoldoutColumnCount(game.playables.length)}, minmax(3.75rem, 4.5rem))`,
+                                gridTemplateColumns: `repeat(${getFoldoutColumnCount(game.playables.length)}, minmax(3rem, 3.5rem))`,
                               }}
                             >
                               {game.playables.map((playable, index) => {
@@ -506,13 +552,13 @@ export default function WorksPage() {
                                     key={playable.id}
                                     onClick={() => selectPlayable(game, playable)}
                                     className={`
-                                      flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-xs font-bold transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
+                                      flex min-h-12 flex-col items-center justify-center rounded-lg border px-1.5 py-1.5 text-center text-xs font-bold transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
                                       ${playableActive
                                         ? "border-[#8b8aef]/40 bg-[#8b8aef]/15 text-white shadow-[0_0_18px_rgba(139,138,239,0.08)]"
                                         : "border-white/5 bg-black/20 text-white/50 hover:border-[#8b8aef]/25 hover:bg-white/5 hover:text-white/80"}
                                     `}
                                   >
-                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] ${playableActive ? "border-[#8b8aef]/35 text-[#8b8aef]" : "border-white/10 text-white/35"}`}>
+                                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-[10px] ${playableActive ? "border-[#8b8aef]/35 text-[#8b8aef]" : "border-white/10 text-white/35"}`}>
                                       {index + 1}
                                     </span>
                                   </button>
@@ -549,7 +595,10 @@ export default function WorksPage() {
         <PlayableFullscreenModal
           game={activeGame}
           playable={activePlayable}
-          playableUrl={activePlayableUrl}
+          playableUrl={modalPlayableUrl}
+          selectedVariant={modalVariant}
+          selectedVariantId={modalVariantId}
+          onSelectVariant={setModalVariantId}
           baseRatio={modalBaseRatio}
           orientation={modalOrientation}
           setBaseRatio={setModalBaseRatio}

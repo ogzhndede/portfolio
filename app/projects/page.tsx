@@ -15,13 +15,25 @@ type GeneratedProjectMetadata = {
 };
 
 const generatedProjectMetadata = projectMetadata as Record<string, GeneratedProjectMetadata>;
+const PROJECT_ORDER = [
+  "Pen Dig",
+  "Water Cut Coin",
+  "One Gun Run",
+  "Currency Mining",
+  "Color Down Stairs",
+  "Color Downstairs",
+  "Sculling ASMR",
+  "Discount Run",
+  "Airport Management",
+  "Airport Manager",
+];
 
 function resolveProjectImage(project: ProjectItem) {
   return project.image ?? project.logo ?? generatedProjectMetadata[project.id]?.image ?? null;
 }
 
 function resolveProjectDescription(project: ProjectItem) {
-  return project.description ?? project.desc ?? generatedProjectMetadata[project.id]?.description ?? "Project details will be added soon.";
+  return project.description ?? project.desc ?? generatedProjectMetadata[project.id]?.description ?? "";
 }
 
 function resolveProjectTitle(project: ProjectItem) {
@@ -40,9 +52,16 @@ function resolvePrimaryProjectLink(project: ProjectItem) {
   return links.find((link) => link.id === project.primaryLinkId || link.label === project.primaryLinkId) ?? links[0];
 }
 
+function getProjectOrderIndex(project: ProjectItem) {
+  const title = resolveProjectTitle(project);
+  const index = PROJECT_ORDER.findIndex((orderedTitle) => orderedTitle.toLowerCase() === title.toLowerCase());
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+}
+
 function ProjectCard({ project }: { project: ProjectItem }) {
   const image = resolveProjectImage(project);
   const title = resolveProjectTitle(project);
+  const description = resolveProjectDescription(project);
   const primaryLink = resolvePrimaryProjectLink(project);
   const cardClasses = "group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-black/40 transition-all duration-300 focus-within:border-[#8b8aef]/40 focus-within:bg-[#8b8aef]/5";
   const linkedCardClasses = "hover:-translate-y-1 hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/5 hover:shadow-[0_0_30px_rgba(139,138,239,0.08)] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50";
@@ -79,9 +98,11 @@ function ProjectCard({ project }: { project: ProjectItem }) {
           </span>
         </div>
 
-        <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
-          {resolveProjectDescription(project)}
-        </p>
+        {description && (
+          <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
+            {description}
+          </p>
+        )}
       </div>
 
       <div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-[#8b8aef]/0 via-[#8b8aef]/60 to-[#8b8aef]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -127,7 +148,9 @@ export default function ProjectsPage() {
 
           <div className="space-y-12">
             {projectCategories.map((category) => {
-              const categoryProjects = projects.filter((project) => project.category === category);
+              const categoryProjects = projects
+                .filter((project) => project.category === category)
+                .sort((first, second) => getProjectOrderIndex(first) - getProjectOrderIndex(second));
 
               return (
                 <section key={category} className="space-y-5">
