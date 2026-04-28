@@ -121,13 +121,23 @@ public/playables/raid-rush/
 ```
 
 Each game folder contains version folders such as `v1`, `v2`, and `v3`.
-Each version folder should contain one playable entry file:
+Each version folder may contain one playable entry file:
 
 ```text
 public/playables/arcane-arena/v1/index.html
 public/playables/arcane-arena/v2/index.html
 public/playables/raid-rush/v1/index.html
 ```
+
+If one version folder contains multiple variants, name them:
+
+```text
+public/playables/arcane-arena/v2/index1.html
+public/playables/arcane-arena/v2/index2.html
+public/playables/arcane-arena/v2/index3.html
+```
+
+Numbered `indexN.html` files should be represented as variants with labels `1`, `2`, `3`. If both `index.html` and numbered files are present in the same folder, prefer the numbered files as variants.
 
 Data files should reference these as runtime URLs without the GitHub Pages base path:
 
@@ -139,7 +149,7 @@ Data files should reference these as runtime URLs without the GitHub Pages base 
 
 The app's public asset helper resolves those paths to `/portfolio/...` during GitHub Pages deployment.
 
-If multiple playable builds exist, prefer separate version folders. Avoid placing multiple entry HTML files in the same version folder.
+Game icons are optional. If a game has no icon, the UI should show an empty/default icon area instead of a broken image.
 
 ## Supported Ratios
 

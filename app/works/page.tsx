@@ -72,6 +72,31 @@ function PlayableStatusOverlay({ hasError }: { hasError: boolean }) {
   );
 }
 
+function GameIcon({
+  game,
+  className,
+}: {
+  game: PlayableGame;
+  className: string;
+}) {
+  if (!game.icon) {
+    return (
+      <div className={`${className} bg-black`} aria-hidden="true" />
+    );
+  }
+
+  return (
+    <div className={className}>
+      <Image
+        src={publicAssetPath(game.icon)}
+        alt={`${game.title} logo`}
+        fill
+        className="object-cover"
+      />
+    </div>
+  );
+}
+
 function PlayableTestFrame({
   game,
   playable,
@@ -135,14 +160,10 @@ function PlayableTestFrame({
       <div className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl sm:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/20">
-              <Image
-                src={publicAssetPath(game.icon)}
-                alt={`${game.title} logo`}
-                fill
-                className="object-cover"
-              />
-            </div>
+            <GameIcon
+              game={game}
+              className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/20"
+            />
             <div>
               <h2 className="truncate text-xl font-bold text-white">{game.title}</h2>
             </div>
@@ -288,14 +309,10 @@ function PlayableFullscreenModal({
       <div className="flex h-[94vh] w-full max-w-7xl flex-col rounded-3xl border border-white/10 bg-[#0a0a0a] p-3 shadow-2xl sm:h-[92vh] sm:p-4 md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/20">
-              <Image
-                src={publicAssetPath(game.icon)}
-                alt={`${game.title} logo`}
-                fill
-                className="object-cover"
-              />
-            </div>
+            <GameIcon
+              game={game}
+              className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/20"
+            />
             <div className="min-w-0">
               <div className="truncate text-lg font-bold text-white">{game.title}</div>
               <div className="truncate text-xs font-bold uppercase tracking-wider text-[#8b8aef]">
@@ -501,14 +518,10 @@ export default function WorksPage() {
                             : "border-white/5 bg-black/40 hover:border-[#8b8aef]/25 hover:bg-white/5"}
                         `}
                       >
-                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-inner">
-                          <Image
-                            src={publicAssetPath(game.icon)}
-                            alt={`${game.title} logo`}
-                            fill
-                            className={`object-cover transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
-                          />
-                        </div>
+                        <GameIcon
+                          game={game}
+                          className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-inner transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                        />
 
                         <div className="min-w-0 flex-1">
                           <div className={`truncate text-sm font-bold ${isActive ? "text-white" : "text-white/70"}`}>

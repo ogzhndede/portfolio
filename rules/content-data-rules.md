@@ -194,6 +194,9 @@ Rules:
 - Write local playable runtime URLs in data without the GitHub Pages base path, for example `/playables/arcane-arena/v1/index.html`.
 - The app's public asset helper is responsible for resolving that path to `/portfolio/playables/arcane-arena/v1/index.html` on GitHub Pages.
 - External URLs must continue to work.
+- If a version folder has `index1.html`, `index2.html`, `index3.html`, etc., treat those files as variants with labels `1`, `2`, `3`.
+- If a version folder has both `index.html` and numbered `indexN.html` files, prefer the numbered files as variants.
+- A playable game icon is optional. Missing icons must render as an empty/default icon area, not a broken image.
 
 ## Asset Organization
 
@@ -226,11 +229,14 @@ Rules:
 - Runtime link:
   - `/files/Oguz_Han_Dede_Resume.pdf`
 - For GitHub Pages base path, internal links may need base path handling.
-- Preferred playable structure is one `index.html` per version folder:
+- Single-build playable structure:
   - `public/playables/game-name/v1/index.html`
   - `public/playables/game-name/v2/index.html`
   - `public/playables/game-name/v3/index.html`
-- Avoid putting multiple playable entry HTML files in the same version folder.
+- Multi-variant playable structure inside one version folder:
+  - `public/playables/game-name/v1/index1.html`
+  - `public/playables/game-name/v1/index2.html`
+  - `public/playables/game-name/v1/index3.html`
 
 ## Data Safety
 

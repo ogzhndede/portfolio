@@ -33,6 +33,7 @@ function resolveProjectImage(project: ProjectItem) {
 }
 
 function resolveProjectDescription(project: ProjectItem) {
+  if (project.category === "Mobile Games") return "";
   return project.description ?? project.desc ?? generatedProjectMetadata[project.id]?.description ?? "";
 }
 

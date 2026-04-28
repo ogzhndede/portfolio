@@ -100,6 +100,7 @@ Rules:
 - Local playable builds should be stored as `public/playables/<game-id>/<version>/index.html`.
 - Data should reference local builds without `/portfolio`, for example `/playables/arcane-arena/v1/index.html`.
 - Under GitHub Pages, the helper should resolve that to `/portfolio/playables/arcane-arena/v1/index.html`.
+- Numbered local playable variants such as `index1.html` and `index2.html` are also static files and should be referenced without `/portfolio`.
 
 ## Creative Video URLs
 

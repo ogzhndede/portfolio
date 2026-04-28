@@ -57,23 +57,6 @@ function GameGroupHeading({
   );
 }
 
-function GameBadge({ creative }: { creative: CreativeItem }) {
-  if (!creative.gameIcon) return null;
-
-  return (
-    <div className="flex min-w-0 items-center gap-2 text-white/40">
-      <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5">
-          <Image
-            src={publicAssetPath(creative.gameIcon)}
-            alt={creative.gameTitle ? `${creative.gameTitle} icon` : "Game icon"}
-            fill
-            className="object-cover"
-          />
-      </div>
-    </div>
-  );
-}
-
 function CreativeCard({
   creative,
   onSelect,
@@ -113,20 +96,6 @@ function CreativeCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div>
-              <GameBadge creative={creative} />
-            </div>
-          </div>
-
-          <span className="mt-0.5 h-4 w-4 shrink-0 text-white/20 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#8b8aef]">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
-            </svg>
-          </span>
-        </div>
-
         <button
           type="button"
           onClick={(event) => {
@@ -135,7 +104,7 @@ function CreativeCard({
           }}
           className="mt-auto rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-white/60 transition hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/10 hover:text-[#8b8aef] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50"
         >
-          Fullscreen
+          View Creative
         </button>
       </div>
 

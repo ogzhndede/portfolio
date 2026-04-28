@@ -71,14 +71,15 @@ Do not write `/portfolio` in data files.
 Store local playable builds under:
 
 ```text
-public/playables/<game-id>/<version>/index.html
+public/playables/<game-id>/<version>/
 ```
 
 Example:
 
 ```text
 public/playables/arcane-arena/v1/index.html
-public/playables/arcane-arena/v2/index.html
+public/playables/arcane-arena/v2/index1.html
+public/playables/arcane-arena/v2/index2.html
 public/playables/raid-rush/v1/index.html
 ```
 
@@ -88,18 +89,12 @@ Reference them in `data/playables.ts` as runtime URLs without the GitHub Pages b
 {
   id: "arcane-arena-v1",
   title: "Arcane Arena 1",
-  variants: [
-    {
-      id: "v1",
-      label: "1",
-      url: "/playables/arcane-arena/v1/index.html",
-    },
-  ],
+  url: "/playables/arcane-arena/v1/index.html",
   aspect: "16:9",
 }
 ```
 
-The preferred structure is one `index.html` per version folder. If there are multiple playable builds, use separate folders such as `v1`, `v2`, and `v3`.
+Use `index.html` for a single playable build. If one playable folder contains multiple variants, name them `index1.html`, `index2.html`, `index3.html`, and so on. In `data/playables.ts`, represent those numbered files as `variants` with labels `1`, `2`, `3`.
 
 ## Creative Videos
 
