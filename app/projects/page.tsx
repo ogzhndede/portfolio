@@ -53,6 +53,13 @@ function resolvePrimaryProjectLink(project: ProjectItem) {
   return links.find((link) => link.id === project.primaryLinkId || link.label === project.primaryLinkId) ?? links[0];
 }
 
+function resolveProjectTags(project: ProjectItem) {
+  if (project.category === "Mobile Games") return ["App Store", "Google Play"];
+  if (project.category === "Game Jam Projects") return ["Itch.io"];
+  if (project.category === "Steam Projects") return ["Steam"];
+  return [];
+}
+
 function getProjectOrderIndex(project: ProjectItem) {
   const title = resolveProjectTitle(project);
   const index = PROJECT_ORDER.findIndex((orderedTitle) => orderedTitle.toLowerCase() === title.toLowerCase());
@@ -63,6 +70,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
   const image = resolveProjectImage(project);
   const title = resolveProjectTitle(project);
   const description = resolveProjectDescription(project);
+  const tags = resolveProjectTags(project);
   const primaryLink = resolvePrimaryProjectLink(project);
   const cardClasses = "group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-black/40 transition-all duration-300 focus-within:border-[#8b8aef]/40 focus-within:bg-[#8b8aef]/5";
   const linkedCardClasses = "hover:-translate-y-1 hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/5 hover:shadow-[0_0_30px_rgba(139,138,239,0.08)] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50";
@@ -98,6 +106,19 @@ function ProjectCard({ project }: { project: ProjectItem }) {
             </svg>
           </span>
         </div>
+
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-md border border-[#8b8aef]/20 bg-[#8b8aef]/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[#8b8aef]/80"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {description && (
           <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
