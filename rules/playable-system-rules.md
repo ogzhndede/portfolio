@@ -39,11 +39,14 @@ When a game is clicked:
 
 - It expands its playable list.
 - Playables appear below it as foldout items.
+- Only one game foldout should be open at a time.
+- Clicking the already-open game may collapse it.
 
 Playable item should show:
 
 - Playable title.
 - Optional small game icon or numeric indicator.
+- Expanded playable items may be shown as small selectable boxes/cards in a centered grid.
 
 When a playable is clicked:
 
@@ -68,8 +71,44 @@ This means:
 Reload is acceptable only when:
 
 - A different playable is selected.
+- A different playable variant is selected.
 - The browser is refreshed.
 - The fullscreen modal opens with a separate iframe.
+
+## Playable Variants
+
+A playable may define either a direct `url` or a `variants` array.
+
+Direct URL example:
+
+```js
+{
+  id: "playable-1",
+  title: "Playable 1",
+  url: "https://example.com/playable-1/index.html"
+}
+```
+
+Variant example:
+
+```js
+{
+  id: "playable-1",
+  title: "Playable 1",
+  variants: [
+    { id: "v1", label: "1", url: "https://example.com/playable-1-v1/index.html" },
+    { id: "v2", label: "2", url: "https://example.com/playable-1-v2/index.html" }
+  ]
+}
+```
+
+Rules:
+
+- Existing playables with only `url` must continue to work.
+- If a playable has variants and no direct URL, default to the first variant.
+- If a playable has both URL and variants, prefer the selected variant, otherwise the first variant, otherwise the direct URL.
+- Variant changes may reload the iframe.
+- Ratio/orientation changes must not reload the selected variant iframe.
 
 ## Supported Ratios
 
@@ -113,7 +152,7 @@ The test panel should include:
 Default ratio/orientation can be set by data or component state. If no specific default is provided, use:
 
 ```text
-4:3 Landscape
+16:9 Portrait
 ```
 
 This matches the current visual reference better.

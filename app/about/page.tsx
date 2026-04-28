@@ -32,7 +32,7 @@ export default function AboutPage() {
             if (displayedText1.length < text1.length) {
                 timeout = setTimeout(() => {
                     setDisplayedText1(text1.slice(0, displayedText1.length + 1));
-                }, 70);
+                }, 32);
             } else {
                 timeout = setTimeout(() => setPhase(1), 400);
             }
@@ -40,7 +40,7 @@ export default function AboutPage() {
             if (displayedText2.length < text2.length) {
                 timeout = setTimeout(() => {
                     setDisplayedText2(text2.slice(0, displayedText2.length + 1));
-                }, 70);
+                }, 32);
             } else {
                 timeout = setTimeout(() => setPhase(2), 250);
             }

@@ -1,10 +1,17 @@
 export type PlayableAspect = "4:3" | "9:16" | "9:20" | "3:4" | "16:9" | "20:9";
 
+export type PlayableVariant = {
+  id: string;
+  label: string;
+  url: string;
+};
+
 export type PlayableItem = {
   id: string;
   label: string;
   title: string;
-  url: string;
+  url?: string;
+  variants?: PlayableVariant[];
   aspect: PlayableAspect;
 };
 

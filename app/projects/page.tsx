@@ -45,7 +45,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       </div>
 
-      <div className="flex flex-col flex-1 p-4 gap-3">
+      <div className="flex flex-1 flex-col gap-2.5 p-3.5">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-sm font-extrabold text-white leading-tight group-hover:text-[#8b8aef] transition-colors duration-200">
             {project.title}
@@ -57,7 +57,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
           </span>
         </div>
 
-        <p className="text-xs text-white/40 leading-relaxed line-clamp-3">
+        <p className="text-[11px] text-white/40 leading-relaxed line-clamp-3">
           {resolveProjectDescription(project)}
         </p>
 
@@ -66,7 +66,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/40"
+                className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-white/40"
               >
                 {tag}
               </span>
@@ -82,13 +82,13 @@ function ProjectCard({ project }: { project: ProjectItem }) {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-white/60 transition hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/10 hover:text-[#8b8aef] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50"
+                className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white/60 transition hover:border-[#8b8aef]/40 hover:bg-[#8b8aef]/10 hover:text-[#8b8aef] focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50"
               >
                 {link.label}
               </a>
             ))
           ) : (
-            <span className="rounded-lg border border-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-white/25">
+            <span className="rounded-lg border border-white/5 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white/25">
               Link coming soon
             </span>
           )}
@@ -123,7 +123,7 @@ export default function ProjectsPage() {
               return (
                 <section key={category} className="space-y-5">
                   <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#8b8aef]">
+                    <h2 className="text-base font-bold uppercase tracking-wider text-[#8b8aef] md:text-lg">
                       {category}
                     </h2>
                     <div className="hidden h-px flex-1 bg-white/10 sm:block" />

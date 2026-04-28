@@ -3,25 +3,62 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Sidebar from "@/components/Sidebar";
-import { playableGames, type PlayableGame, type PlayableItem } from "@/data/playables";
+import { playableGames, type PlayableGame, type PlayableItem, type PlayableVariant } from "@/data/playables";
 import { publicAssetPath } from "@/lib/paths";
 
 type SelectedPlayableState = {
   gameId: string;
   playableId: string;
+  variantId?: string;
 };
 
 type BaseRatio = "9:20" | "16:9" | "4:3";
 type Orientation = "Portrait" | "Landscape";
 
 const RATIO_OPTIONS: BaseRatio[] = ["9:20", "16:9", "4:3"];
+const DEFAULT_RATIO: BaseRatio = "16:9";
+const DEFAULT_ORIENTATION: Orientation = "Portrait";
+const PREVIEW_FRAME_MAX_HEIGHT_VH = 70;
+const MODAL_FRAME_MAX_HEIGHT_VH = 72;
 
 function getFrameAspect(baseRatio: BaseRatio, orientation: Orientation) {
   const [first, second] = baseRatio.split(":").map(Number);
-  const wide = Math.max(first, second);
-  const tall = Math.min(first, second);
+  const width = orientation === "Landscape" ? Math.max(first, second) : Math.min(first, second);
+  const height = orientation === "Landscape" ? Math.min(first, second) : Math.max(first, second);
 
-  return orientation === "Landscape" ? `${wide}/${tall}` : `${tall}/${wide}`;
+  return {
+    css: `${width}/${height}`,
+    value: width / height,
+  };
+}
+
+function getFrameWidthForMaxHeight(baseRatio: BaseRatio, orientation: Orientation, maxHeightVh: number) {
+  return `min(100%, ${(getFrameAspect(baseRatio, orientation).value * maxHeightVh).toFixed(4)}vh)`;
+}
+
+function getPlayableVariants(playable: PlayableItem | undefined) {
+  return playable?.variants ?? [];
+}
+
+function getDefaultVariantId(playable: PlayableItem | undefined) {
+  return getPlayableVariants(playable)[0]?.id;
+}
+
+function getSelectedVariant(playable: PlayableItem | undefined, variantId?: string) {
+  const variants = getPlayableVariants(playable);
+  return variants.find((variant) => variant.id === variantId) ?? variants[0];
+}
+
+function resolvePlayableUrl(playable: PlayableItem | undefined, variantId?: string) {
+  if (!playable) return "";
+  return getSelectedVariant(playable, variantId)?.url ?? playable.url ?? "";
+}
+
+function getFoldoutColumnCount(playableCount: number) {
+  if (playableCount <= 0) return 1;
+  if (playableCount <= 4) return playableCount;
+  if (playableCount <= 9) return 3;
+  return 4;
 }
 
 function PlayableStatusOverlay({ hasError }: { hasError: boolean }) {
@@ -38,6 +75,10 @@ function PlayableStatusOverlay({ hasError }: { hasError: boolean }) {
 function PlayableTestFrame({
   game,
   playable,
+  playableUrl,
+  selectedVariant,
+  selectedVariantId,
+  onSelectVariant,
   baseRatio,
   orientation,
   setBaseRatio,
@@ -46,6 +87,10 @@ function PlayableTestFrame({
 }: {
   game: PlayableGame | undefined;
   playable: PlayableItem | undefined;
+  playableUrl: string;
+  selectedVariant: PlayableVariant | undefined;
+  selectedVariantId: string | undefined;
+  onSelectVariant: (variantId: string) => void;
   baseRatio: BaseRatio;
   orientation: Orientation;
   setBaseRatio: (ratio: BaseRatio) => void;
@@ -54,10 +99,11 @@ function PlayableTestFrame({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const playableUrl = playable ? publicAssetPath(playable.url) : "";
+  const variants = getPlayableVariants(playable);
+  const resolvedPlayableUrl = playableUrl ? publicAssetPath(playableUrl) : "";
 
   useEffect(() => {
-    if (!playableUrl) {
+    if (!resolvedPlayableUrl) {
       setIsLoading(false);
       setHasError(false);
       return;
@@ -65,7 +111,7 @@ function PlayableTestFrame({
 
     setIsLoading(true);
     setHasError(false);
-  }, [playableUrl]);
+  }, [resolvedPlayableUrl]);
 
   if (!game || !playable) {
     return (
@@ -99,9 +145,6 @@ function PlayableTestFrame({
             </div>
             <div>
               <h2 className="truncate text-xl font-bold text-white">{game.title}</h2>
-              <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[#8b8aef]">
-                {playable.title ?? playable.label}
-              </p>
             </div>
           </div>
 
@@ -138,14 +181,44 @@ function PlayableTestFrame({
           </div>
         </div>
 
+        {variants.length > 0 && (
+          <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-white/5 pb-6">
+            <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+              Variants
+            </span>
+            {variants.map((variant, index) => {
+              const active = selectedVariant?.id === variant.id || selectedVariantId === variant.id;
+
+              return (
+                <button
+                  key={variant.id}
+                  type="button"
+                  onClick={() => onSelectVariant(variant.id)}
+                  className={`
+                    flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-xs font-bold uppercase tracking-widest transition focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
+                    ${active
+                      ? "border-[#8b8aef]/50 bg-[#8b8aef]/15 text-white"
+                      : "border-white/10 bg-white/5 text-white/45 hover:border-[#8b8aef]/30 hover:bg-[#8b8aef]/10 hover:text-white"}
+                  `}
+                >
+                  {variant.label || index + 1}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex min-h-[360px] items-center justify-center rounded-2xl border border-white/5 bg-black/40 p-3 shadow-inner md:min-h-[650px] md:p-6">
           <div
-            className="relative max-h-[70vh] w-full max-w-[760px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
-            style={{ aspectRatio: getFrameAspect(baseRatio, orientation) }}
+            className="relative max-h-[70vh] max-w-[760px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
+            style={{
+              aspectRatio: getFrameAspect(baseRatio, orientation).css,
+              width: getFrameWidthForMaxHeight(baseRatio, orientation, PREVIEW_FRAME_MAX_HEIGHT_VH),
+            }}
           >
             <iframe
               className="absolute inset-0 h-full w-full border-0"
-              src={playableUrl}
+              src={resolvedPlayableUrl}
               title={`${game.title} - ${playable.title ?? playable.label}`}
               allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
               sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
@@ -169,6 +242,7 @@ function PlayableTestFrame({
 function PlayableFullscreenModal({
   game,
   playable,
+  playableUrl,
   baseRatio,
   orientation,
   setBaseRatio,
@@ -177,6 +251,7 @@ function PlayableFullscreenModal({
 }: {
   game: PlayableGame;
   playable: PlayableItem;
+  playableUrl: string;
   baseRatio: BaseRatio;
   orientation: Orientation;
   setBaseRatio: (ratio: BaseRatio) => void;
@@ -185,12 +260,12 @@ function PlayableFullscreenModal({
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const playableUrl = publicAssetPath(playable.url);
+  const resolvedPlayableUrl = publicAssetPath(playableUrl);
 
   useEffect(() => {
     setIsLoading(true);
     setHasError(false);
-  }, [playableUrl]);
+  }, [resolvedPlayableUrl]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -256,12 +331,15 @@ function PlayableFullscreenModal({
 
         <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-white/5 bg-black/40 p-3 shadow-inner md:p-6">
           <div
-            className="relative max-h-full w-full max-w-[1120px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
-            style={{ aspectRatio: getFrameAspect(baseRatio, orientation) }}
+            className="relative max-h-[72vh] max-w-[1120px] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl transition-all duration-500 ease-out"
+            style={{
+              aspectRatio: getFrameAspect(baseRatio, orientation).css,
+              width: getFrameWidthForMaxHeight(baseRatio, orientation, MODAL_FRAME_MAX_HEIGHT_VH),
+            }}
           >
             <iframe
               className="absolute inset-0 h-full w-full border-0"
-              src={playableUrl}
+              src={resolvedPlayableUrl}
               title={`${game.title} - ${playable.title ?? playable.label} fullscreen`}
               allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
               sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"
@@ -285,19 +363,17 @@ function PlayableFullscreenModal({
 export default function WorksPage() {
   const initialGame = playableGames[0];
   const initialPlayable = initialGame?.playables[0];
-  const [expandedGameIds, setExpandedGameIds] = useState<string[]>(
-    initialGame ? [initialGame.id] : []
-  );
+  const [expandedGameId, setExpandedGameId] = useState<string | null>(initialGame?.id ?? null);
   const [selectedPlayable, setSelectedPlayable] = useState<SelectedPlayableState | null>(
     initialGame && initialPlayable
-      ? { gameId: initialGame.id, playableId: initialPlayable.id }
+      ? { gameId: initialGame.id, playableId: initialPlayable.id, variantId: getDefaultVariantId(initialPlayable) }
       : null
   );
-  const [baseRatio, setBaseRatio] = useState<BaseRatio>("4:3");
-  const [orientation, setOrientation] = useState<Orientation>("Landscape");
+  const [baseRatio, setBaseRatio] = useState<BaseRatio>(DEFAULT_RATIO);
+  const [orientation, setOrientation] = useState<Orientation>(DEFAULT_ORIENTATION);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
-  const [modalBaseRatio, setModalBaseRatio] = useState<BaseRatio>("4:3");
-  const [modalOrientation, setModalOrientation] = useState<Orientation>("Landscape");
+  const [modalBaseRatio, setModalBaseRatio] = useState<BaseRatio>(DEFAULT_RATIO);
+  const [modalOrientation, setModalOrientation] = useState<Orientation>(DEFAULT_ORIENTATION);
 
   const activeGame = useMemo(
     () => playableGames.find((game) => game.id === selectedPlayable?.gameId),
@@ -309,23 +385,37 @@ export default function WorksPage() {
     [activeGame, selectedPlayable]
   );
 
+  const activeVariant = useMemo(
+    () => getSelectedVariant(activePlayable, selectedPlayable?.variantId),
+    [activePlayable, selectedPlayable]
+  );
+
+  const activePlayableUrl = useMemo(
+    () => resolvePlayableUrl(activePlayable, selectedPlayable?.variantId),
+    [activePlayable, selectedPlayable]
+  );
+
   function selectGame(game: PlayableGame) {
-    setExpandedGameIds((current) =>
-      current.includes(game.id)
-        ? current.filter((id) => id !== game.id)
-        : [...current, game.id]
-    );
+    setExpandedGameId((current) => (current === game.id ? null : game.id));
   }
 
   function selectPlayable(game: PlayableGame, playable: PlayableItem) {
-    setSelectedPlayable({ gameId: game.id, playableId: playable.id });
+    setSelectedPlayable({
+      gameId: game.id,
+      playableId: playable.id,
+      variantId: getDefaultVariantId(playable),
+    });
+  }
+
+  function selectVariant(variantId: string) {
+    setSelectedPlayable((current) => current ? { ...current, variantId } : current);
   }
 
   function openFullscreen() {
-    if (!activePlayable) return;
+    if (!activePlayable || !activePlayableUrl) return;
 
-    setModalBaseRatio(baseRatio);
-    setModalOrientation(orientation);
+    setModalBaseRatio(baseRatio ?? DEFAULT_RATIO);
+    setModalOrientation(orientation ?? DEFAULT_ORIENTATION);
     setIsFullscreenOpen(true);
   }
 
@@ -351,7 +441,7 @@ export default function WorksPage() {
               <div className="px-2 text-xs font-bold uppercase tracking-wider text-[#8b8aef]">Library</div>
               <div className="custom-scrollbar grid max-h-[45vh] gap-2 overflow-y-auto pr-2 lg:max-h-[70vh]">
                 {playableGames.map((game) => {
-                  const isExpanded = expandedGameIds.includes(game.id);
+                  const isExpanded = expandedGameId === game.id;
                   const isActive = selectedPlayable?.gameId === game.id;
 
                   return (
@@ -394,36 +484,45 @@ export default function WorksPage() {
                       </button>
 
                       {isExpanded && (
-                        <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-white/10 pl-3">
+                        <div className="ml-4 mt-2 border-l border-white/10 pl-3">
                           {game.playables.length === 0 && (
                             <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-3 py-3 text-xs font-bold uppercase tracking-widest text-white/25">
                               No playables added yet.
                             </div>
                           )}
 
-                          {game.playables.map((playable, index) => {
-                            const playableActive = selectedPlayable?.playableId === playable.id && selectedPlayable?.gameId === game.id;
+                          {game.playables.length > 0 && (
+                            <div
+                              className="grid justify-center gap-2"
+                              style={{
+                                gridTemplateColumns: `repeat(${getFoldoutColumnCount(game.playables.length)}, minmax(3.75rem, 4.5rem))`,
+                              }}
+                            >
+                              {game.playables.map((playable, index) => {
+                                const playableActive = selectedPlayable?.playableId === playable.id && selectedPlayable?.gameId === game.id;
 
-                            return (
-                              <button
-                                key={playable.id}
-                                onClick={() => selectPlayable(game, playable)}
-                                className={`
-                                  flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
-                                  ${playableActive
-                                    ? "border-[#8b8aef]/40 bg-[#8b8aef]/15 text-white"
-                                    : "border-white/5 bg-black/20 text-white/50 hover:border-[#8b8aef]/25 hover:bg-white/5 hover:text-white/80"}
-                                `}
-                              >
-                                <span className="flex min-w-0 items-center gap-2">
-                                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] ${playableActive ? "border-[#8b8aef]/30 text-[#8b8aef]" : "border-white/10 text-white/30"}`}>
-                                    {index + 1}
-                                  </span>
-                                  <span className="truncate">{playable.title ?? playable.label}</span>
-                                </span>
-                              </button>
-                            );
-                          })}
+                                return (
+                                  <button
+                                    key={playable.id}
+                                    onClick={() => selectPlayable(game, playable)}
+                                    className={`
+                                      flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-xs font-bold transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#8b8aef]/50
+                                      ${playableActive
+                                        ? "border-[#8b8aef]/40 bg-[#8b8aef]/15 text-white shadow-[0_0_18px_rgba(139,138,239,0.08)]"
+                                        : "border-white/5 bg-black/20 text-white/50 hover:border-[#8b8aef]/25 hover:bg-white/5 hover:text-white/80"}
+                                    `}
+                                  >
+                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] ${playableActive ? "border-[#8b8aef]/35 text-[#8b8aef]" : "border-white/10 text-white/35"}`}>
+                                      {index + 1}
+                                    </span>
+                                    <span className="line-clamp-2 text-[10px] leading-tight">
+                                      {playable.title ?? playable.label}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -435,6 +534,10 @@ export default function WorksPage() {
             <PlayableTestFrame
               game={activeGame}
               playable={activePlayable}
+              playableUrl={activePlayableUrl}
+              selectedVariant={activeVariant}
+              selectedVariantId={selectedPlayable?.variantId}
+              onSelectVariant={selectVariant}
               baseRatio={baseRatio}
               orientation={orientation}
               setBaseRatio={setBaseRatio}
@@ -449,6 +552,7 @@ export default function WorksPage() {
         <PlayableFullscreenModal
           game={activeGame}
           playable={activePlayable}
+          playableUrl={activePlayableUrl}
           baseRatio={modalBaseRatio}
           orientation={modalOrientation}
           setBaseRatio={setModalBaseRatio}

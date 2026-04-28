@@ -73,9 +73,9 @@ Required categories:
 
 ```js
 export const projectCategories = [
+  "Game Jam Projects",
   "Mobile Games",
-  "Steam Projects",
-  "Game Jam Projects"
+  "Steam Projects"
 ];
 ```
 
@@ -142,7 +142,18 @@ export const playableGames = [
       {
         id: "arcane-arena-2",
         title: "Arcane Arena 2",
-        url: "https://example.com/arcane-arena-2/index.html"
+        variants: [
+          {
+            id: "v1",
+            label: "1",
+            url: "https://example.com/arcane-arena-2-v1/index.html"
+          },
+          {
+            id: "v2",
+            label: "2",
+            url: "https://example.com/arcane-arena-2-v2/index.html"
+          }
+        ]
       }
     ]
   }
@@ -155,6 +166,8 @@ Rules:
 - Clicking a game expands/collapses its playable list.
 - Clicking a playable loads that playable in the test frame.
 - A playable URL is already browser-runnable HTML.
+- A playable may use either a direct `url` or a `variants` array.
+- If variants exist, the UI should expose variant buttons in the test panel.
 - The URL may be external or local.
 - Local playable paths may be supported later, but external URLs must work.
 
