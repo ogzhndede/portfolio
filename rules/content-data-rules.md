@@ -12,6 +12,7 @@ Recommended structure:
 src/data/profile.js
 src/data/projects.js
 src/data/playables.js
+src/data/creatives.js
 src/data/socialLinks.js
 ```
 
@@ -192,3 +193,43 @@ Components should handle:
 - Broken resume PDF preview.
 
 Do not crash the page because of incomplete content.
+
+## Creatives Data
+
+Creative ad videos are managed through a creatives data file.
+
+Recommended shape:
+
+```js
+export const creatives = [
+  {
+    id: "example-creative-1",
+    title: "Creative 1",
+    gameTitle: "Arcane Arena",
+    gameIcon: "/images/playables/arcane-arena/icon.png",
+    videoUrl: "/videos/creatives/example-creative-1.mp4",
+    thumbnail: "/images/creatives/example-creative-1.jpg"
+  }
+];
+```
+
+Rules:
+
+- `videoUrl` should support local MP4 paths.
+- `thumbnail` is optional.
+- `gameIcon` is optional.
+- `gameTitle` is optional.
+- Missing optional fields must not break the UI.
+- Local creative video and image paths must respect the GitHub Pages base path.
+
+Recommended creative asset structure:
+
+```text
+public/
+  videos/
+    creatives/
+  images/
+    creatives/
+```
+
+Do not crash the page because a creative thumbnail or game icon is missing.

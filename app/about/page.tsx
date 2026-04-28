@@ -79,11 +79,14 @@ export default function AboutPage() {
                     </div>
 
                     <div className={`flex w-full flex-col gap-3 mt-4 transition-opacity duration-1000 sm:w-auto sm:flex-row sm:gap-4 ${phase === 2 ? 'opacity-100' : 'opacity-0'}`}>
-                        <Link href="/projects" className="px-8 py-3 text-center bg-white text-black font-mono font-bold rounded-lg hover:bg-gray-200 transition">
+                        <Link href="/works" className="px-8 py-3 text-center bg-white text-black font-mono font-bold rounded-lg hover:bg-gray-200 transition">
+                            Playables
+                        </Link>
+                        <Link href="/projects" className="px-8 py-3 text-center border border-white/20 bg-white/5 font-mono text-white font-bold rounded-lg hover:bg-white/10 transition">
                             Projects
                         </Link>
-                        <Link href="/works" className="px-8 py-3 text-center border border-white/20 bg-white/5 font-mono text-white font-bold rounded-lg hover:bg-white/10 transition">
-                            Playables
+                        <Link href="/creatives" className="px-8 py-3 text-center border border-white/20 bg-white/5 font-mono text-white font-bold rounded-lg hover:bg-white/10 transition">
+                            Creatives
                         </Link>
                     </div>
 

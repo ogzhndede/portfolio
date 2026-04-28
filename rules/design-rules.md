@@ -56,8 +56,9 @@ The sidebar should include:
 - Subtitle: `GAME / PLAYABLE ADS DEVELOPER`
 - Navigation items:
   - About Me
-  - Projects
   - Playables
+  - Projects
+  - Creatives
   - CV
 - Social links at the bottom:
   - LinkedIn
@@ -114,7 +115,7 @@ Content:
 - Profile photo.
 - Main greeting/title.
 - Animated typewriter subtitle.
-- Buttons linking to Projects and Playables.
+- Buttons linking to Playables, Projects, and Creatives.
 
 Do not add long bio, location, skill lists, or extra sections unless explicitly requested.
 
@@ -160,6 +161,21 @@ Expected layout:
 
 The left side contains a playable library.  
 The right side contains the playable testing frame.
+
+## Creatives Design
+
+Creatives section should show short creative ad videos / marketing videos.
+
+Each card may include:
+
+- Video preview.
+- Creative title.
+- Optional game icon.
+- Optional game title.
+
+Videos should use muted previews or controls and must not autoplay loudly.
+
+Clicking a creative should open an in-page modal with a larger video player and close button.
 
 ## CV Design
 

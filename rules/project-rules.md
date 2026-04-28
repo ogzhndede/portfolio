@@ -9,6 +9,7 @@ It should present:
 - Developer identity.
 - Selected games and projects.
 - Playable ads in an interactive test frame.
+- Creative ad videos / marketing videos.
 - Resume preview and download.
 - Social/contact links.
 
@@ -29,8 +30,9 @@ The site should behave like a single-page app.
 Navigation items:
 
 - About Me
-- Projects
 - Playables
+- Projects
+- Creatives
 - CV
 
 Changing sections should update the visible content without a full page reload.

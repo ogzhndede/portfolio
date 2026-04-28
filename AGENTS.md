@@ -14,24 +14,25 @@ Expected public URL pattern:
 https://username.github.io/portfolio/
 ```
 
-The site must feel like a single-page app. Navigation between About Me, Projects, Playables, and CV should not cause a full page reload.
+The site must feel like a single-page app. Navigation between About Me, Playables, Projects, Creatives, and CV should not cause a full page reload.
 
 ## Primary Goals
 
 - Keep the current visual style.
-- Showcase games, projects, playable ads, and resume.
-- Make adding new projects and playables simple through data files.
+- Showcase games, projects, playable ads, creative ad videos, and resume.
+- Make adding new projects, playables, and creatives simple through data files.
 - Keep the site lightweight, static, and compatible with GitHub Pages.
 - Prioritize desktop layout while keeping mobile reasonably usable.
 
 ## Main Sections
 
-The site has four main sections:
+The site has five main sections:
 
 1. About Me
-2. Projects
-3. Playables
-4. CV
+2. Playables
+3. Projects
+4. Creatives
+5. CV
 
 The left sidebar is persistent on desktop. On mobile, it may become a top navigation/header layout.
 
@@ -75,10 +76,11 @@ Recommended structure:
 src/data/profile.js
 src/data/projects.js
 src/data/playables.js
+src/data/creatives.js
 src/data/socialLinks.js
 ```
 
-Adding a new project or playable should not require changing layout/component logic.
+Adding a new project, playable, or creative should not require changing layout/component logic.
 
 ## Codex Working Rules
 
